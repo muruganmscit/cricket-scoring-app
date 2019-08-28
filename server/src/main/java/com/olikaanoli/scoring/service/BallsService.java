@@ -3,7 +3,7 @@ package com.olikaanoli.scoring.service;
 import com.olikaanoli.scoring.model.Ball;
 import com.olikaanoli.scoring.model.BallResponse;
 import com.olikaanoli.scoring.model.Team;
-importcom.olikaanoli.scoring.repository.BallsRepository;
+import com.olikaanoli.scoring.repository.BallsRepository;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
