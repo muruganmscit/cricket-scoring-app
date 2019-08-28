@@ -1,4 +1,4 @@
-package com.aexp.samplespqr.model;
+package com.olikaanoli.scoring.model;
 
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Data;
