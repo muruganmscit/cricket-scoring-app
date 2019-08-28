@@ -1,6 +1,6 @@
 package com.olikaanoli.scoring.repository;
 
-import com.aexp.samplespqr.model.Ball;
+import com.olikaanoli.scoring.model.Ball;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
