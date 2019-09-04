@@ -1,9 +1,9 @@
 package com.olikaanoli.scoring.service;
 
 import com.olikaanoli.scoring.input.match.CreateMatchInput;
-import com.olikaanoli.scoring.model.Match;
-import com.olikaanoli.scoring.repository.MatchRepository;
-import com.olikaanoli.scoring.repository.TeamRepository;
+import com.olikaanoli.scoring.input.match.StartMatchInput;
+import com.olikaanoli.scoring.model.*;
+import com.olikaanoli.scoring.repository.*;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
@@ -11,32 +11,46 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @GraphQLApi
 public class MatchService {
 
     private final MatchRepository matchRepository;
-    private final TeamRepository teamRepository;
+    private final BatsmanScorecardRepository batsmanScorecardRepository;
+    private final BowlerScorecardRepository bowlerScorecardRepository;
+    private final TotalScorecardRepository totalScorecardRepository;
+    private final TeamService teamService;
+    private final PlayerService playerService;
     private final MapperFacade mapperFacade;
 
     public MatchService(
             MatchRepository matchRepository,
-            TeamRepository teamRepository,
+            TeamService teamService,
+            PlayerService playerService,
+            BatsmanScorecardRepository batsmanScorecardRepository,
+            BowlerScorecardRepository bowlerScorecardRepository,
+            TotalScorecardRepository totalScorecardRepository,
             MapperFacade mapperFacade
     ) {
         this.matchRepository = matchRepository;
-        this.teamRepository = teamRepository;
+        this.teamService = teamService;
+        this.playerService = playerService;
+        this.batsmanScorecardRepository = batsmanScorecardRepository;
+        this.bowlerScorecardRepository = bowlerScorecardRepository;
+        this.totalScorecardRepository = totalScorecardRepository;
         this.mapperFacade = mapperFacade;
     }
 
     /**
      * Function to get all the matchs
      */
-    @GraphQLQuery(name = "GetAllMatchs")
-    public List<Match> getMatchs() {
+    @GraphQLQuery(name = "GetAllMatches")
+    public List<Match> getMatches() {
         return matchRepository.findAll();
     }
 
@@ -54,15 +68,47 @@ public class MatchService {
         Match lMatch = mapperFacade.map(match, Match.class);
 
         // updating the home and away team details
-        lMatch.setHomeTeam(teamRepository.findById(match.getHomeTeamId()).get());
-        lMatch.setAwayTeam(teamRepository.findById(match.getAwayTeamId()).get());
+        lMatch.setHomeTeam(teamService.getTeamById(match.getHomeTeamId()).get());
+        lMatch.setAwayTeam(teamService.getTeamById(match.getAwayTeamId()).get());
 
         return matchRepository.save(lMatch);
     }
 
+    @GraphQLMutation(name = "StartMatch")
+    public Match startMatchUpdate(
+            @GraphQLArgument(name = "matchId") Long matchId,
+            @GraphQLArgument(name = "startMatchInput") StartMatchInput startMatchInput
+    ) {
+        // getting the match details from server
+        Match locMatch = getMatchById(matchId).get();
+
+        // updating the match details with new details
+        mapperFacade.map(startMatchInput, locMatch);
+
+        // Setting the Toss winning team
+        locMatch.setTossWinner(teamService.getTeamById(startMatchInput.getTossWinnerId()).get());
+
+        // updating the partial data into the table
+        matchRepository.save(locMatch);
+
+        // calling the method to update batting & bowling scorecard
+        // for both teams
+        computePlayerScorecard(
+                startMatchInput.getInnings1Team(),
+                startMatchInput.getInnings1Playing11(),
+                matchId, 1, 2);
+        computePlayerScorecard(
+                startMatchInput.getInnings2Team(),
+                startMatchInput.getInnings2Playing11(),
+                matchId, 2, 1);
+
+        return locMatch;
+    }
+
     /**
      * Updating the match details
-     * @param match Match Object
+     *
+     * @param match   Match Object
      * @param matchId Match ID
      * @return match
      */
@@ -74,5 +120,63 @@ public class MatchService {
         mapperFacade.map(match, locMatch);
         return matchRepository.save(locMatch);
 
+    }
+
+    /**
+     * Method to update the score card for batting and bowlers
+     *
+     * @param inningsTeam
+     * @param playersList
+     * @param matchId
+     * @param battingInn
+     * @param bowlingInn
+     */
+    public void computePlayerScorecard(
+            Long inningsTeam,
+            Set<Long> playersList,
+            Long matchId,
+            int battingInn,
+            int bowlingInn
+    ) {
+
+        // 1. Batting & Bowling scorecard with 22 rows for both teams
+        Set<BatsmanScorecard> batsmanScorecardSet = new HashSet<>();
+        Set<BowlerScorecard> bowlerScorecardSet = new HashSet<>();
+
+        // iterating through 1st innings team team
+        Team inn1Team = teamService.getTeamById(inningsTeam).get();
+        for (Long player : playersList) {
+
+            Player currentPlayer = playerService.getPlayerById(player).get();
+
+            // Setting the batting scorecard list
+            BatsmanScorecard batsmanScorecard = new BatsmanScorecard();
+            batsmanScorecard.setMatchId(matchId);
+            batsmanScorecard.setInnings(battingInn);
+            batsmanScorecard.setTeam(inn1Team);
+            batsmanScorecard.setBatsman(currentPlayer);
+            batsmanScorecardSet.add(batsmanScorecard);
+
+            // Setting the bowling scorecard list
+            BowlerScorecard bowlerScorecard = new BowlerScorecard();
+            bowlerScorecard.setMatchId(matchId);
+            bowlerScorecard.setInnings(bowlingInn);
+            bowlerScorecard.setTeam(inn1Team);
+            bowlerScorecard.setBowler(currentPlayer);
+            bowlerScorecardSet.add(bowlerScorecard);
+        }
+
+        // updating the batting scorecard table
+        batsmanScorecardRepository.saveAll(batsmanScorecardSet);
+
+        // updating the bowling scorecard table
+        bowlerScorecardRepository.saveAll(bowlerScorecardSet);
+
+        // 3. total_scorecard table with 2 rows one for each team.
+        TotalScorecard totalScorecard = new TotalScorecard();
+        totalScorecard.setMatchId(matchId);
+        totalScorecard.setTeam(inn1Team);
+        totalScorecard.setInnings(battingInn);
+        totalScorecardRepository.save(totalScorecard);
     }
 }

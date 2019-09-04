@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.3.3",
+    "@material-ui/icons": "^4.2.1",
     "apollo-boost": "^0.4.4",
     "apollo-link-ws": "^1.0.18",
     "bootstrap": "^4.3.1",

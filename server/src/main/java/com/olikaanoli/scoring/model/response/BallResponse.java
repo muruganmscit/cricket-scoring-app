@@ -1,4 +1,4 @@
-package com.olikaanoli.scoring.model;
+package com.olikaanoli.scoring.model.response;
 
 import lombok.Data;
 

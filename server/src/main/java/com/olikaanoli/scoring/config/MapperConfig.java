@@ -14,7 +14,7 @@ public class MapperConfig {
     }
 
     @Bean
-    MapperFacade mapperFacade() {
+    public MapperFacade mapperFacade() {
         return mapperFactory().getMapperFacade();
     }
 }

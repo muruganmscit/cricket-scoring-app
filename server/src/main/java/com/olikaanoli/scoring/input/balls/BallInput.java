@@ -1,23 +1,11 @@
-package com.olikaanoli.scoring.model;
+package com.olikaanoli.scoring.input.balls;
 
 import com.olikaanoli.scoring.config.Extras;
 import com.olikaanoli.scoring.config.Wickets;
-import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
-import javax.persistence.*;
 
 @Data
-@Entity
-@Table(name = "innings")
-public class Ball {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @GraphQLQuery(name = "id", description = "Unique id for ball")
-    private Long id;
+public class BallInput {
 
     // it can be either 1 / 2
     private int innings;
@@ -46,26 +34,11 @@ public class Ball {
     // type of extras if any. this should come from a enum
     private Extras extraType = null;
 
-    // any runs coming from extras
-    private Integer extraRun = null;
-
     // Total runs scored in the ball
     private int runsTotal = 0;
 
-    // runs scored nby batsman
-    private int batsmanRuns = 0;
-
-    // ball counter for batsman
-    private int batsmanBall = 0;
-
-    // runs allocated for bowler
-    private int bowlerRuns = 0;
-
-    // ball counter for bowler
-    private int bowlerBall = 0;
-
     // if wicket, what type it is
-    private Wickets wicketType;
+    private Wickets wicketType = null;
 
     // player who got out
     private Integer wicketPlayer = null;
@@ -78,6 +51,5 @@ public class Ball {
 
     // if the runs scored came by boundary
     private Boolean nonBoundary = false;
-
 
 }

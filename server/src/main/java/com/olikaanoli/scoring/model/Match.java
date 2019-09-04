@@ -1,5 +1,6 @@
 package com.olikaanoli.scoring.model;
 
+import com.olikaanoli.scoring.config.TossDecision;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Data;
 
@@ -28,12 +29,12 @@ public class Match {
     private Integer overs;
 
     @GraphQLQuery(name = "homeTeam", description = "Home Team")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "home_team_id", foreignKey = @ForeignKey(name = "FK_HOME_TEAM"))
     private Team homeTeam;
 
     @GraphQLQuery(name = "awayTeam", description = "Away Team")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "away_team_id", foreignKey = @ForeignKey(name = "FK_AWAY_TEAM"))
     private Team awayTeam;
 
@@ -50,18 +51,18 @@ public class Match {
     private Integer difference;
 
     @GraphQLQuery(name = "winningTeam", description = "Team won the Match")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "winning_team_id", foreignKey = @ForeignKey(name = "FK_WINNING_TEAM"))
     private Team winningTeam;
 
     @GraphQLQuery(name = "tossWinner", description = "Toss Winner")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "toss_team_id", foreignKey = @ForeignKey(name = "FK_TOSS_TEAM"))
     private Team tossWinner;
 
     @Column(name = "toss_decision")
     @GraphQLQuery(name = "tossDecision", description = "Toss Decision")
-    private String tossDecision;
+    private TossDecision tossDecision;
 
     @Column(name = "umpire1")
     @GraphQLQuery(name = "umpire1", description = "Name of first umpire")

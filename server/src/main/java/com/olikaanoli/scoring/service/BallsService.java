@@ -1,8 +1,8 @@
 package com.olikaanoli.scoring.service;
 
+import com.olikaanoli.scoring.input.balls.BallInput;
 import com.olikaanoli.scoring.model.Ball;
-import com.olikaanoli.scoring.model.BallResponse;
-import com.olikaanoli.scoring.model.Team;
+import com.olikaanoli.scoring.model.response.BallResponse;
 import com.olikaanoli.scoring.repository.BallsRepository;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
@@ -10,6 +10,7 @@ import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.annotations.GraphQLSubscription;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import io.leangen.graphql.spqr.spring.util.ConcurrentMultiMap;
+import ma.glasnost.orika.MapperFacade;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -22,35 +23,53 @@ import java.util.List;
 public class BallsService {
 
     private final String BALL_ADDED = "_BallAdded";
-    private int total;
-    private int wicket;
-    private int extras;
+    // private int total;
+    // private int wicket;
+    // private int extras;
     private final BallsRepository ballsRepository;
+    private final MapperFacade mapperFacade;
     private final ConcurrentMultiMap<String, FluxSink<BallResponse>> subscribers = new ConcurrentMultiMap<>();
 
-    public BallsService(BallsRepository ballsRepository) {
+    public BallsService(BallsRepository ballsRepository, MapperFacade mapperFacade) {
         this.ballsRepository = ballsRepository;
-        this.total = 0;
-        this.wicket = 0;
-        this.extras = 0;
+        this.mapperFacade = mapperFacade;
+        //this.total = 0;
+        //this.wicket = 0;
+        //this.extras = 0;
     }
 
     /**
      * Saving the given ball
      */
     @GraphQLMutation(name = "AddBall")
-    public Ball saveBall(@GraphQLArgument(name = "ball") Ball ball) {
-        Ball locBall = ballsRepository.save(ball);
+    public Ball saveBall(@GraphQLArgument(name = "ballInput") BallInput ballInput) {
+
+        // creating the ball Object from Input
+        Ball localBall = mapperFacade.map(ballInput, Ball.class);
+
+        // checking whether the extra type is available
+        // checking for legal ball
+        if(null == localBall.getExtraType()) {
+            // setting the batsman and bowler runs & Balls
+            localBall.setBatsmanRuns(ballInput.getRunsTotal());
+            localBall.setBatsmanBall(1);
+
+            localBall.setBowlerRuns(ballInput.getRunsTotal());
+            localBall.setBatsmanBall(1);
+        }
+
+        // saving the object to database
+        ballsRepository.save(localBall);
 
         // calculate ball
-        calculateBall(locBall);
+        //calculateBall(locBall);
 
         // Notify all the subscribers following this task
-        String index = ball.getMatchId() + BALL_ADDED;
+        //String index = ball.getMatchId() + BALL_ADDED;
 
-        subscribers.get(index).forEach(subscriber -> subscriber.next(getTotal()));
+        //subscribers.get(index).forEach(subscriber -> subscriber.next(getTotal()));
 
-        return locBall;
+        return localBall;
     }
 
     @GraphQLQuery(name = "GetAllBalls")
@@ -67,11 +86,6 @@ public class BallsService {
     public BallResponse getTotal() {
         // Ball Response
         BallResponse ballResponse = new BallResponse();
-        //ballResponse.setMatchId(ball.getMatchId());
-        ballResponse.setTotal(this.total);
-        ballResponse.setWickets(this.wicket);
-        ballResponse.setExtras(this.extras);
-
         return ballResponse;
     }
 
@@ -83,25 +97,5 @@ public class BallsService {
                         subscribers.add(index, subscriber.onDispose(() ->
                                 subscribers.remove(index, subscriber))),
                 FluxSink.OverflowStrategy.LATEST);
-    }
-
-    private void calculateBall(Ball ball) {
-        switch (ball.getBallDetails()) {
-            case "W":
-                this.wicket = this.wicket + 1;
-                break;
-            case "N":
-                this.extras = this.extras + 1;
-                break;
-            case "O":
-                this.total = this.total + 1;
-                break;
-            case "T":
-                this.total = this.total + 2;
-                break;
-            case "F":
-                this.total = this.total + 4;
-                break;
-        }
     }
 }

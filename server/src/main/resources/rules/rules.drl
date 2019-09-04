@@ -1,0 +1,103 @@
+package rules
+
+import com.olikaanoli.scoring.model.Ball
+import com.olikaanoli.scoring.config.Extras
+
+rule "Dot Ball"
+    when
+        ballObject: Ball(null == extraType) && Ball(runsTotal == 0)
+    then
+        // setting the following details
+        // batsman and bowler balls
+        ballObject.setBatsmanBall(1);
+        ballObject.setBowlerBall(1);
+        // No need to increase runs since default to zero
+        System.out.println("Dot Ball");
+    end
+
+rule "Ball was scored"
+    when
+        $ballObject: Ball(null == extraType) && Ball(runsTotal != 0)
+    then
+        // setting the following details
+        // batsman and bowler balls
+        $ballObject.setBatsmanBall(1);
+        $ballObject.setBowlerBall(1);
+
+        // incrementing the run count for both
+        $ballObject.setBatsmanRuns($ballObject.getRunsTotal());
+        $ballObject.setBowlerRuns($ballObject.getRunsTotal());
+        System.out.println("Batsman Scored");
+    end
+
+rule "Wide - Wide Byes Ball"
+    when
+       $ballObject: Ball(extraType == Extras.WIDE || extraType == Extras.WIDE_BYES)
+    then
+        // only update runs for the bowler
+        $ballObject.setBowlerRuns($ballObject.getRunsTotal());
+
+        // update the extra Runs column. Since its a wide
+        // only one run would be allocated
+        $ballObject.setExtraRun($ballObject.getRunsTotal());
+
+        System.out.println($ballObject.getExtraType());
+    end
+
+rule "No Ball and No Ball with Runs"
+    when
+        $ballObject: Ball(extraType == Extras.NO_BALL)
+    then
+        // Ball has to be set for batsman
+        $ballObject.setBatsmanBall(1);
+
+        // Setting the runs
+        $ballObject.setBatsmanRuns($ballObject.getRunsTotal() - 1);
+        $ballObject.setBowlerRuns($ballObject.getRunsTotal());
+
+        // Setting the extra runs. for No Ball it will be 1
+        $ballObject.setExtraRun(1);
+        System.out.println($ballObject.getExtraType());
+    end
+
+rule "No Ball Byes Runs"
+    when
+        $ballObject: Ball(extraType == Extras.NO_BALL_BYES)
+    then
+        // Ball has to be set for batsman
+        $ballObject.setBatsmanBall(1);
+
+        // Setting the runs
+        $ballObject.setBowlerRuns($ballObject.getRunsTotal());
+
+        // Setting the extra runs. Since NB Byes all total is added
+        $ballObject.setExtraRun($ballObject.getRunsTotal());
+        System.out.println($ballObject.getExtraType());
+    end
+
+rule "No Ball Leg Byes Runs"
+    when
+        $ballObject: Ball(extraType == Extras.NO_BALL_LEG_BYES)
+    then
+        // Ball has to be set for batsman
+        $ballObject.setBatsmanBall(1);
+
+        // Setting the runs
+        $ballObject.setBowlerRuns(1);
+
+        // Setting the extra runs. Since Leg Byes all total is added
+        $ballObject.setExtraRun($ballObject.getRunsTotal());
+        System.out.println($ballObject.getExtraType());
+    end
+
+rule "Byes - Leg Byes Runs"
+    when
+        $ballObject: Ball(extraType == Extras.BYES || extraType == Extras.LEG_BYES)
+    then
+        // Ball has to be set for batsman & bowler
+        $ballObject.setBatsmanBall(1);
+        $ballObject.setBowlerBall(1);
+
+        // Adding runs to extras. Since this is fielding extras
+        $ballObject.setExtraRun($ballObject.getRunsTotal());
+    end
