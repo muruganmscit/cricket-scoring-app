@@ -12,12 +12,12 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "Teams")
-@ToString(exclude = {"players", "homeTeam", "awayTeam", "tossWinner"})
-@EqualsAndHashCode(exclude = {"players", "homeTeam", "awayTeam", "tossWinner"})
+//@ToString(exclude = {"players", "homeTeam", "awayTeam", "tossWinner"})
+//@EqualsAndHashCode(exclude = {"players", "homeTeam", "awayTeam", "tossWinner"})
 public class Team {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @GraphQLQuery(name = "id", description = "Unique id for a team")
     private Long id;
 

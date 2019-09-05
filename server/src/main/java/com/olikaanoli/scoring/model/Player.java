@@ -19,19 +19,25 @@ public class Player {
     private Long id;
 
     // first name of the player
+    @Column(name = "first_name")
     private String firstName;
 
     // Player last name
+    @Column(name = "last_name")
     private String lastName;
 
     private Gender gender;
 
+    @Column(name = "nick_name")
     private String nickName;
 
+    @Column(name = "player_role")
     private PlayerRoles playerRole;
 
+    @Column(name = "batting_hand")
     private Hands battingHand;
 
+    @Column(name = "bowling_hand")
     private Hands bowlingHand;
 
     @GraphQLQuery(name = "Team", description = "Player Team")

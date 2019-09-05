@@ -15,80 +15,23 @@ import org.springframework.stereotype.Service;
 public class BallCalculationRulesService {
 
     private final KieContainer kieContainer;
-    private final MapperFacade mapperFacade;
 
     @Autowired
-    public BallCalculationRulesService(KieContainer kieContainer, MapperFacade mapperFacade) {
+    public BallCalculationRulesService(KieContainer kieContainer) {
         this.kieContainer = kieContainer;
-        this.mapperFacade = mapperFacade;
     }
 
     /**
      * Method to run the scoring logic using drools
-     * @param ballInput Object
+     * @param locBall Ball Object
      * @return Ball complete Ball details to be inserted
      */
-    private Ball calculateBall(BallInput ballInput) {
-
-        /// Converting the ball input to Ball object
-        Ball locBall = new Ball();
-        mapperFacade.map(ballInput, locBall);
+    public Ball calculateBall(Ball locBall) {
 
         KieSession kieSession = kieContainer.newKieSession("rulesSession");
         kieSession.insert(locBall);
         kieSession.fireAllRules();
         kieSession.dispose();
         return locBall;
-    }
-
-    public static void main(String[] args) {
-        KieConfig kieConfig = new KieConfig();
-        MapperConfig mapperConfig = new MapperConfig();
-
-        BallCalculationRulesService ballCalculationRulesService =
-                new BallCalculationRulesService(kieConfig.kieContainer(), mapperConfig.mapperFacade());
-        /*BallInput ballInput = new BallInput();
-        ballInput.setInnings(1);
-        ballInput.setMatchId(1);
-        ballInput.setTeamId(1);
-        ballInput.setOvers(0);
-        ballInput.setBall(1);
-        ballInput.setBatsman(1);
-        ballInput.setNonStriker(2);
-        ballInput.setBowler(3);
-        ballInput.setRunsTotal(0);
-        Ball _2 = ballCalculationRulesService.calculateBall(ballInput);
-        System.out.println(_2.getBatsmanRuns());*/
-
-        /*BallInput ballInput1 = new BallInput();
-        ballInput1.setInnings(1);
-        ballInput1.setMatchId(1);
-        ballInput1.setTeamId(1);
-        ballInput1.setOvers(0);
-        ballInput1.setBall(1);
-        ballInput1.setBatsman(1);
-        ballInput1.setNonStriker(2);
-        ballInput1.setBowler(3);
-        ballInput1.setRunsTotal(1);
-        Ball _1 = ballCalculationRulesService.calculateBall(ballInput1);
-        System.out.println(_1.getBatsmanRuns());*/
-
-        BallInput ballInput1 = new BallInput();
-        ballInput1.setInnings(1);
-        ballInput1.setMatchId(1);
-        ballInput1.setTeamId(1);
-        ballInput1.setOvers(0);
-        ballInput1.setBall(1);
-        ballInput1.setBatsman(1);
-        ballInput1.setNonStriker(2);
-        ballInput1.setBowler(3);
-        ballInput1.setExtraType(Extras.LEG_BYES);
-        ballInput1.setRunsTotal(4);
-        Ball _1 = ballCalculationRulesService.calculateBall(ballInput1);
-        System.out.println(_1.getBatsmanRuns());
-        System.out.println(_1.getBowlerRuns());
-        System.out.println(_1.getBatsmanBall());
-        System.out.println(_1.getBowlerBall());
-        System.out.println(_1.getExtraRun());
     }
 }

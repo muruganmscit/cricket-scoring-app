@@ -19,6 +19,7 @@ public class TotalScorecard {
     private int innings;
 
     // unique id for the match
+    @Column(name = "match_id")
     private Long matchId;
 
     // team id where the batsman belongs to
@@ -31,9 +32,11 @@ public class TotalScorecard {
     private Integer byes = 0;
 
     // runs received via legbyes extra
+    @Column(name = "leg_byes")
     private Integer legByes = 0;
 
     // runs scored in NoBall
+    @Column(name = "no_balls")
     private Integer noBalls = 0;
 
     // runs received by penalty
@@ -43,9 +46,11 @@ public class TotalScorecard {
     private Integer wides = 0;
 
     // total runs received by extras ( wide / legbyes / byes / Noball)
+    @Column(name = "extra_runs")
     private Integer extraRuns = 0;
 
     // Total Team runs
+    @Column(name = "total_runs")
     private Integer totalRuns = 0;
 
     // Wickets count for the innings

@@ -16,6 +16,7 @@ public class BatsmanScorecard {
     private Long id;
 
     // unique id for the match
+    @Column(name = "match_id")
     private Long matchId;
 
     // innings number
@@ -34,6 +35,7 @@ public class BatsmanScorecard {
 
     // Order in which he / she is batting
     // setting the value default to 12
+    @Column(name = "batting_order")
     private Integer battingOrder = 12;
 
     // runs scored by batsman
@@ -58,9 +60,11 @@ public class BatsmanScorecard {
     private Integer sixes = 0;
 
     // No of dot balls
+    @Column(name = "dot_balls")
     private Integer dotBalls = 0;
 
     // if out. what type of wicket.
+    @Column(name = "wicket_type")
     private Integer wicketType;
 
     // Bowler id who took the wicket

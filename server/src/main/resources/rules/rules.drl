@@ -101,3 +101,7 @@ rule "Byes - Leg Byes Runs"
         // Adding runs to extras. Since this is fielding extras
         $ballObject.setExtraRun($ballObject.getRunsTotal());
     end
+
+// rule "Wide Wicket - Stumped"
+// rule "No Ball wicket - Run Out"
+// rule "Byes Leg Byes - Run Out"

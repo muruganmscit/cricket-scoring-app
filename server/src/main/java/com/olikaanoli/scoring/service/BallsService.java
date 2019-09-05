@@ -2,6 +2,7 @@ package com.olikaanoli.scoring.service;
 
 import com.olikaanoli.scoring.input.balls.BallInput;
 import com.olikaanoli.scoring.model.Ball;
+import com.olikaanoli.scoring.model.Player;
 import com.olikaanoli.scoring.model.response.BallResponse;
 import com.olikaanoli.scoring.repository.BallsRepository;
 import io.leangen.graphql.annotations.GraphQLArgument;
@@ -16,26 +17,32 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @GraphQLApi
 public class BallsService {
 
     private final String BALL_ADDED = "_BallAdded";
-    // private int total;
-    // private int wicket;
-    // private int extras;
+
     private final BallsRepository ballsRepository;
     private final MapperFacade mapperFacade;
     private final ConcurrentMultiMap<String, FluxSink<BallResponse>> subscribers = new ConcurrentMultiMap<>();
+    private final BallCalculationRulesService ballCalculationRulesService;
+    private final PlayerService playerService;
 
-    public BallsService(BallsRepository ballsRepository, MapperFacade mapperFacade) {
+    public BallsService(
+            BallsRepository ballsRepository,
+            MapperFacade mapperFacade,
+            BallCalculationRulesService ballCalculationRulesService,
+            PlayerService playerService
+    ) {
         this.ballsRepository = ballsRepository;
         this.mapperFacade = mapperFacade;
-        //this.total = 0;
-        //this.wicket = 0;
-        //this.extras = 0;
+        this.ballCalculationRulesService = ballCalculationRulesService;
+        this.playerService = playerService;
     }
 
     /**
@@ -44,28 +51,19 @@ public class BallsService {
     @GraphQLMutation(name = "AddBall")
     public Ball saveBall(@GraphQLArgument(name = "ballInput") BallInput ballInput) {
 
+        Map<Integer, Player> playerMap = new HashMap<>();
+
         // creating the ball Object from Input
         Ball localBall = mapperFacade.map(ballInput, Ball.class);
 
-        // checking whether the extra type is available
-        // checking for legal ball
-        if(null == localBall.getExtraType()) {
-            // setting the batsman and bowler runs & Balls
-            localBall.setBatsmanRuns(ballInput.getRunsTotal());
-            localBall.setBatsmanBall(1);
-
-            localBall.setBowlerRuns(ballInput.getRunsTotal());
-            localBall.setBatsmanBall(1);
-        }
+        // Call the Drool kie for updating the runs, balls and extras
+        ballCalculationRulesService.calculateBall(localBall);
 
         // saving the object to database
         ballsRepository.save(localBall);
 
-        // calculate ball
-        //calculateBall(locBall);
-
         // Notify all the subscribers following this task
-        //String index = ball.getMatchId() + BALL_ADDED;
+        String index = localBall.getMatchId() + BALL_ADDED;
 
         //subscribers.get(index).forEach(subscriber -> subscriber.next(getTotal()));
 
@@ -80,13 +78,12 @@ public class BallsService {
     /**
      * Return the total and should be based on match id
      *
-     * @return
+     * @return BallResponse
      */
     @GraphQLQuery(name = "GetTotal")
     public BallResponse getTotal() {
         // Ball Response
-        BallResponse ballResponse = new BallResponse();
-        return ballResponse;
+        return new BallResponse();
     }
 
     @GraphQLSubscription(name = "BallAdded")

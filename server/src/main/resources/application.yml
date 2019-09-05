@@ -1,6 +1,7 @@
 spring:
   jpa:
     show-sql: true
+    # validate | update | create | create-drop
     hibernate.ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   datasource:

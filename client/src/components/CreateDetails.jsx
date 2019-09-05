@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag'
+import ScoreButton from './button/ScoreButton'
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -81,6 +82,7 @@ const CreateDetails = ({client, ...props}) => {
     return(
         <div>
             <div className="status">{status}</div>
+            <ScoreButton />
             <br />
             <button className="square" onClick={() => {setValue('0')}}>
                 DOT

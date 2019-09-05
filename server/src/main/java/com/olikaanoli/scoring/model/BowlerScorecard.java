@@ -16,6 +16,7 @@ public class BowlerScorecard {
     private Long id;
 
     // unique id for the match
+    @Column(name = "match_id")
     private Long matchId;
 
     // innings number
@@ -34,6 +35,7 @@ public class BowlerScorecard {
 
     // Order in which he / she is bowling
     // setting the value default to 12
+    @Column(name = "bowling_order")
     private Integer bowlingOrder = 12;
 
     // no of overs bowler has bowled
@@ -49,9 +51,11 @@ public class BowlerScorecard {
     private Integer wickets = 0;
 
     // No of dot balls
+    @Column(name = "dot_balls")
     private Integer dotBalls = 0;
 
     // No Ball extra type
+    @Column(name = "no_balls")
     private Integer noBalls = 0;
 
     // Wide extra type
