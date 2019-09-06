@@ -12,13 +12,14 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
   -- variable for bowling scorecard 
   DECLARE vBowlDotBalls tinyint;
   DECLARE vBowlMaidens tinyint;
+  DECLARE vBowlCurrentOverRuns tinyint;
   DECLARE vBowlNoBalls tinyint;
   DECLARE vBowlOver tinyint;
   DECLARE vBowlRuns tinyint;
   DECLARE vBowlWicket tinyint;
   DECLARE vBowlWides tinyint;
 
-  -- variable for total scorecard 
+  -- variable for total scorecard
   DECLARE vTotByes tinyint;
   DECLARE vTotExtraRuns tinyint;
   DECLARE vTotLegByes tinyint;
@@ -34,10 +35,14 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
   DECLARE vBatBowlerId tinyint;
   DECLARE vBatFielder1 tinyint;
   DECLARE vBatFielder2 tinyint;
-  
+
   DECLARE vRuns tinyint;
   DECLARE vWicket tinyint;
   DECLARE vTotalRuns integer;
+  DECLARE vCurrentBall tinyint;
+  DECLARE vOvers tinyint;
+  DECLARE vBalls tinyint;
+  DECLARE isBowling bit;
 
   -- ----------------------------------------------------------------------------------
   -- Processing Batting Scorecard
@@ -50,14 +55,22 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
   SET vBatSixs = 0;
   SET vBatDotBalls = 0;
 
+  -- Setting total score variables
+  SET vTotWides = 0;
+  SET vTotNoBalls = 0;
+  SET vTotLegByes = 0;
+  SET vTotByes = 0;
+  SET vTotPenalty = 0;
+
   -- Checking the runs scored to update corresponding type
-  CASE NEW.batsman_runs
-    WHEN 1 THEN SET vBatOnes = 1;
-    WHEN 2 THEN SET vBatTwos = 1;
-    WHEN 3 THEN SET vBatThrees = 1;
-    WHEN 4 THEN SET vBatFours = 1;
-    WHEN 6 THEN SET vBatSixs = 1;
-    WHEN 0 THEN SET vBatDotBalls = 1;
+  CASE
+    WHEN NEW.batsman_runs=1 THEN SET vBatOnes = 1;
+    WHEN NEW.batsman_runs=2 THEN SET vBatTwos = 1;
+    WHEN NEW.batsman_runs=3 THEN SET vBatThrees = 1;
+    WHEN NEW.batsman_runs=4 THEN SET vBatFours = 1;
+    WHEN NEW.batsman_runs=6 THEN SET vBatSixs = 1;
+    WHEN (NEW.batsman_runs=0 && NEW.batsman_ball <> 0) THEN SET vBatDotBalls = 1;
+    ELSE BEGIN END;
   END CASE;
 
   SET vWicket = 0;
@@ -70,7 +83,7 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
       bowler_id = NEW.bowler,
       fielder1_id = NEW.fielder1,
       fielder2_id = NEW.fielder2
-    WHERE 
+    WHERE
       match_id = NEW.match_id and team_id = NEW.team_id and batsman_id = NEW.wicket_player;
   END IF;
 
@@ -83,12 +96,16 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     ELSE SET vRuns = 0;
   END CASE;
 
+  SET vBatting = 1;
   IF ((NEW.batsman_runs + vRuns)%2 <> 0) THEN
-    SET vBatting = 2;
+    IF (vBatting <> 0) THEN
+        SET vBatting = 2;
+    END IF;
+
     UPDATE batsman_scorecard
     SET
       batting = 1
-    WHERE 
+    WHERE
       match_id = NEW.match_id and team_id = NEW.team_id and batting = 2;
   END IF;
 
@@ -101,10 +118,10 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     twos = twos + vBatTwos,
     threes = threes + vBatThrees,
     fours = fours + vBatFours,
-    sixs = sixs + vBatSixs,
+    sixes = sixes + vBatSixs,
     dot_balls = dot_balls + vBatDotBalls,
     batting = vBatting
-  WHERE 
+  WHERE
     match_id = NEW.match_id and team_id = NEW.team_id and batsman_id = NEW.batsman;
   -- ----------------------------------------------------------------------------------
 
@@ -127,20 +144,49 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     ELSE SET vRuns = 0;
   END CASE;
 
-  -- TODO: Logic for maidens over
-  -- if balls = 6 and sum of bowler runs in that over is 0 
-  -- TODO: If ball is set to 6 have to update the over
-  UPDATE bowlers_scorecard
+  -- Logic for maidens over
+  -- if balls = 6 and sum of bowler runs in that over is 0
+  -- Check if Ball == 6
+  -- Assumption ball increment is maintained in client-end too
+  SET vBowlMaidens = 0;
+  SET vOvers = 0;
+  SET vBalls = NEW.ball;
+  SET isBowling = b'1';
+  IF (NEW.ball = 6 && NEW.bowler_ball <> 0) THEN
+    -- incrementing the overs
+    SET vBalls = 0;
+    SET vOvers = 1;
+    SET isBowling = b'0';
+
+    -- Calculating the maiden login
+    SET vBowlCurrentOverRuns = (SELECT SUM(bowler_runs) from innings where match_id = NEW.match_id and bowler = NEW.bowler and overs = NEW.overs);
+    IF (vBowlCurrentOverRuns = 0) THEN
+      SET vBowlMaidens = 1;
+    END IF;
+
+    -- PLAYER switching logic
+    UPDATE batsman_scorecard
+      SET batting = CASE WHEN batting = 2 THEN 1 ELSE ( IF(batting = 1, 2, batting) ) END
+    WHERE
+      match_id = NEW.match_id and team_id = NEW.team_id;
+
+  ELSEIF (NEW.ball <= 6 && NEW.bowler_ball = 0) THEN
+    SET vBalls = vBalls - 1;
+  END IF;
+
+  UPDATE bowler_scorecard
   SET
-    overs = CAST(FLOOR(overs) AS DECIMAL(4, 0)) + (NEW.bowler_ball/10.0),
-    maidens = 0,
+    overs = overs + vOvers,
+    balls = vBalls,
+    maidens = maidens + vBowlMaidens,
     runs = runs + NEW.bowler_runs,
     wickets = wickets + vWicket,
     dot_balls = dot_balls + vBowlDotBalls,
     wides = wides + vBowlWides,
-    no_balls = no_balls + vBowlNoBalls
-  WHERE 
-    match_id = NEW.match_id and team_id = NEW.team_id and player_id = NEW.bowler;
+    no_balls = no_balls + vBowlNoBalls,
+    bowling = isBowling
+  WHERE
+    match_id = NEW.match_id and bowler_id = NEW.bowler;
   -- ----------------------------------------------------------------------------------
 
   -- ----------------------------------------------------------------------------------
@@ -156,13 +202,14 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     WHEN 5 THEN SET vTotWides = NEW.extra_run;
     WHEN 6 THEN SET vTotNoBalls = NEW.extra_run;
     WHEN 7 THEN SET vTotNoBalls = 1; SET vTotLegByes = NEW.extra_run - 1;
+    ELSE BEGIN END;
   END CASE;
 
   -- Updating total sc
-  -- TODO: If ball is set to 6 have to update the over
-  UPDATE total_extras_scorecard
+  UPDATE total_scorecard
   SET
-    overs = CAST(CONCAT(NEW.overs, ".", NEW.bowler_ball) AS DECIMAL(3,1)),
+    overs = overs + vOvers,
+    balls = vBalls,
     total_runs = total_runs + NEW.runs_total,
     wides = wides + vTotWides,
     no_balls = no_balls + vTotNoBalls,
@@ -171,8 +218,8 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     leg_byes = leg_byes + vTotLegByes,
     extra_runs = extra_runs + NEW.extra_run,
     wickets = wickets + vWicket
-  WHERE 
+  WHERE
     match_id = NEW.match_id and team_id = NEW.team_id;
   -- ----------------------------------------------------------------------------------
-  
-END
+
+END;

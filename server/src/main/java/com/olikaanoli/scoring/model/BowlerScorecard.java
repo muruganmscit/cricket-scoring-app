@@ -38,8 +38,11 @@ public class BowlerScorecard {
     @Column(name = "bowling_order")
     private Integer bowlingOrder = 12;
 
-    // no of overs bowler has bowled
-    private Float overs = null;
+    // no of overs bowler has completed
+    private int overs = 0;
+
+    // no of balls in current over
+    private int balls = 0;
 
     // no of over where no runs were scored.
     private Integer maidens = 0;

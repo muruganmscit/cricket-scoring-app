@@ -12,8 +12,8 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name = "Teams")
-//@ToString(exclude = {"players", "homeTeam", "awayTeam", "tossWinner"})
-//@EqualsAndHashCode(exclude = {"players", "homeTeam", "awayTeam", "tossWinner"})
+@ToString(exclude = {"players"})
+@EqualsAndHashCode(exclude = {"players"})
 public class Team {
 
     @Id

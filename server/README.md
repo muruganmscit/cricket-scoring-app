@@ -1,58 +1,12 @@
-mutation {
-  CreateMatch(match: {
-    city: "Phoenix"
-    homeTeam: 1
-    awayTeam: 2
-    dates: "08-21-2019"
-    venue: "Road Runner Park"
-    overs: 20
-    tossWinner: 0
-    winningTeam: 0
-    difference: 0
-  }) {
-    id
-  }
-}
+TODO LIST:
 
-{
-  GetAllMatchs {
-    id
-    homeTeam
-    awayTeam
-    city
-    venue
-  }
-}
+1. Adding option to hold 5 and 7 runs in the table.
+2. API update fot setting the batting order.
+3. API update fot setting the bowling order.
 
-## Adding a Team
-mutation {
-  CreateTeam(team: {
-    teamName: "NPCC Giants"
-    city: "Phoenix"
-  }) {
-    id
-    teamName
-    city
-  }
-}
+Issues:
 
-{
-	GetAllTeams {
-    id
-    teamName
-    city
-  }
-}
+1. Batsman switching in case of run out, with some 
+runs added. [This can be solved by prompting to select
+who is facing]
 
-mutation {
-  CreateMatch(createMatchInput: {
-    homeTeamId: 1
-    awayTeamId: 2
-    overs: 20
-    city: "Phoenix"
-    matchDate: "08-22-2019"
-    venue: "Road Runner Park"
-  }) {
-    id
-  }
-}

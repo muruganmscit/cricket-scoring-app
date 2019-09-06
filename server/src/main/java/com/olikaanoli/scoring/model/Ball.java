@@ -52,7 +52,7 @@ public class Ball {
 
     // any runs coming from extras
     @Column(name = "extra_run")
-    private Integer extraRun = null;
+    private Integer extraRun = 0;
 
     // Total runs scored in the ball
     @Column(name = "runs_total")

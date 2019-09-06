@@ -56,7 +56,10 @@ public class TotalScorecard {
     // Wickets count for the innings
     private Integer wickets = 0;
 
-    // current running overs
-    private Float overs = 0.0f;
+    // overs completed
+    private int overs = 0;
+
+    // current running balls
+    private int balls = 0;
 
 }
