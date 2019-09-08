@@ -4,8 +4,6 @@ import com.olikaanoli.scoring.config.Extras;
 import com.olikaanoli.scoring.config.Wickets;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -24,11 +22,11 @@ public class Ball {
 
     // unique id for the match
     @Column(name = "match_id")
-    private int matchId;
+    private Long matchId;
 
     // team that plays batting
     @Column(name = "team_id")
-    private int teamId;
+    private Long teamId;
 
     // over that is currently running
     private int overs;

@@ -45,11 +45,10 @@ public class BowlerScorecardService {
 
     @GraphQLQuery(name = "GetCurrentBowlerForMatch")
     public BowlerScorecard getCurrentBowlerForMatch(
-            @GraphQLArgument(name = "matchId") Long matchId,
-            @GraphQLArgument(name = "teamId") Long teamId
+            @GraphQLArgument(name = "matchId") Long matchId
     ) {
         return bowlerScorecardRepository
-                .findCurrentBlowerByTeamIdAndMatchIdAndBatting(teamId, matchId);
+                .findCurrentBowlerByMatchId(matchId);
     }
 
     @GraphQLMutation(name = "SetNewBowler")
@@ -68,7 +67,7 @@ public class BowlerScorecardService {
         // Get the current bowler and reset the bowling flag if any
         BowlerScorecard currentBowler =
                 bowlerScorecardRepository
-                        .findCurrentBlowerByTeamIdAndMatchIdAndBatting(updateBowler.getTeam().getId(), matchId);
+                        .findCurrentBowlerByMatchId(matchId);
         if(null != currentBowler) {
             currentBowler.setBowling(false);
             System.out.println(currentBowler.getId() + " - "

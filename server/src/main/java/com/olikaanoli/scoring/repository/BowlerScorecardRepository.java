@@ -22,12 +22,12 @@ public interface BowlerScorecardRepository extends JpaRepository<BowlerScorecard
     BowlerScorecard findByBowler_IdAndMatchId(Long bowlerId, Long matchId);
 
     /**
-     * Getting the current bowler for a match and team
+     * Getting the current bowler for a match
      * TODO: Need to check on the logic. if by some mishap if we received
      * 2 records
      */
-    @Query("select b from BowlerScorecard b where (b.team.id = ?1 and b.matchId = ?2 and b.bowling = true)")
-    BowlerScorecard findCurrentBlowerByTeamIdAndMatchIdAndBatting(Long teamID, Long matchId);
+    @Query("select b from BowlerScorecard b where (b.matchId = ?1 and b.bowling = true)")
+    BowlerScorecard findCurrentBowlerByMatchId(Long matchId);
 
 
 }

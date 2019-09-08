@@ -3,7 +3,7 @@ package com.olikaanoli.scoring.service;
 import com.olikaanoli.scoring.input.balls.BallInput;
 import com.olikaanoli.scoring.model.Ball;
 import com.olikaanoli.scoring.model.Player;
-import com.olikaanoli.scoring.model.response.BallResponse;
+import com.olikaanoli.scoring.model.response.BallByBallResponse;
 import com.olikaanoli.scoring.repository.BallsRepository;
 import io.leangen.graphql.annotations.GraphQLArgument;
 import io.leangen.graphql.annotations.GraphQLMutation;
@@ -13,6 +13,7 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import io.leangen.graphql.spqr.spring.util.ConcurrentMultiMap;
 import ma.glasnost.orika.MapperFacade;
 import org.reactivestreams.Publisher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -29,20 +30,29 @@ public class BallsService {
 
     private final BallsRepository ballsRepository;
     private final MapperFacade mapperFacade;
-    private final ConcurrentMultiMap<String, FluxSink<BallResponse>> subscribers = new ConcurrentMultiMap<>();
+    private final ConcurrentMultiMap<String, FluxSink<BallByBallResponse>> subscribers = new ConcurrentMultiMap<>();
     private final BallCalculationRulesService ballCalculationRulesService;
     private final PlayerService playerService;
+    private final TotalScorecardService totalScorecardService;
+    private final BowlerScorecardService bowlerScorecardService;
+    private final BatsmanScorecardService batsmanScorecardService;
 
     public BallsService(
             BallsRepository ballsRepository,
             MapperFacade mapperFacade,
             BallCalculationRulesService ballCalculationRulesService,
-            PlayerService playerService
+            PlayerService playerService,
+            TotalScorecardService totalScorecardService,
+            BowlerScorecardService bowlerScorecardService,
+            BatsmanScorecardService batsmanScorecardService
     ) {
         this.ballsRepository = ballsRepository;
         this.mapperFacade = mapperFacade;
         this.ballCalculationRulesService = ballCalculationRulesService;
         this.playerService = playerService;
+        this.totalScorecardService = totalScorecardService;
+        this.bowlerScorecardService = bowlerScorecardService;
+        this.batsmanScorecardService = batsmanScorecardService;
     }
 
     /**
@@ -65,7 +75,11 @@ public class BallsService {
         // Notify all the subscribers following this task
         String index = localBall.getMatchId() + BALL_ADDED;
 
-        //subscribers.get(index).forEach(subscriber -> subscriber.next(getTotal()));
+        // calling method to populate the BallByBallResponse Object
+        // and adding to sub
+        subscribers.get(index).forEach(subscriber -> subscriber.next(
+                getMatchScorecard(localBall.getMatchId(), localBall.getTeamId(), localBall.getOvers())
+        ));
 
         return localBall;
     }
@@ -80,19 +94,60 @@ public class BallsService {
      *
      * @return BallResponse
      */
-    @GraphQLQuery(name = "GetTotal")
-    public BallResponse getTotal() {
+    @GraphQLQuery(name = "GetMatchScorecard")
+    public BallByBallResponse getMatchScorecard(
+            @GraphQLArgument(name = "matchId") Long matchId,
+            @GraphQLArgument(name = "teamId") Long teamId
+    ) {
         // Ball Response
-        return new BallResponse();
+        // Getting the current over
+        Integer overs = ballsRepository.findRunningOverForMatchIdAndTeam(matchId, teamId);
+        if (null == overs) {
+            overs = 0;
+        }
+        return getMatchScorecard(matchId, teamId, overs);
     }
 
     @GraphQLSubscription(name = "BallAdded")
-    public Publisher<BallResponse> ballAdded(int matchId) {
+    public Publisher<BallByBallResponse> ballAdded(int matchId) {
         String index = matchId + BALL_ADDED;
         return Flux.create(
                 subscriber ->
                         subscribers.add(index, subscriber.onDispose(() ->
                                 subscribers.remove(index, subscriber))),
                 FluxSink.OverflowStrategy.LATEST);
+    }
+
+    /**
+     * Method: populateResponse
+     *
+     * @return
+     */
+    private BallByBallResponse getMatchScorecard(Long matchId, Long teamId, int overs) {
+
+        // init
+        BallByBallResponse ballByBallResponse = new BallByBallResponse();
+
+        // Getting the totals for the match
+        ballByBallResponse.setTotalScorecards(totalScorecardService.getTotalCardByMatch(matchId));
+
+        // Getting the Current bowler details
+        ballByBallResponse.setBowlerScorecard(bowlerScorecardService.getCurrentBowlerForMatch(matchId));
+
+        // Getting the Current Batsman details
+        ballByBallResponse.setBatsmanScorecards(
+                batsmanScorecardService.getAllActiveBatsmanByMatchAndTeam(matchId, teamId)
+        );
+
+        // getting the balls details
+        ballByBallResponse.setBalls(ballsRepository.findAllBallsByMatchIdAndTeamIdAndOvers(
+                matchId,
+                teamId,
+                overs,
+                new Sort(Sort.Direction.ASC, "id")
+        ));
+
+        // return result
+        return ballByBallResponse;
     }
 }

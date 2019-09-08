@@ -74,8 +74,17 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
   END CASE;
 
   SET vWicket = 0;
+  SET vBatting = 1;
   IF (NEW.wicket_type IS NOT NULL) THEN
     SET vWicket = 1;
+
+    -- checking if the batsman is out. then batting flag is set to 0
+    IF (NEW.batsman = NEW.wicket_player) THEN
+        SET vBatting = 0;
+    END IF;
+
+    SET vBatting = 0;
+    -- TODO: Check whether this can be single update with the below update
     UPDATE batsman_scorecard
     SET
       batting = 0,
@@ -96,8 +105,9 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     ELSE SET vRuns = 0;
   END CASE;
 
-  SET vBatting = 1;
-  IF ((NEW.batsman_runs + vRuns)%2 <> 0) THEN
+  -- NOTE: In-case of wickets we will no be switching the players
+  -- we will initiate the request from UI.
+  IF ((NEW.batsman_runs + vRuns)%2 <> 0 && NEW.wicket_type IS NULL) THEN
     IF (vBatting <> 0) THEN
         SET vBatting = 2;
     END IF;
