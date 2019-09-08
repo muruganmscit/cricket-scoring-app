@@ -1,0 +1,41 @@
+mutation AddLegalBallMutatuon(
+  $innings: Int!, $matchId: Int!, 
+  $teamId: Int!, $over: Int!,
+  $ball: Int!, $batsman: Int!,
+  $bowler: Int!, $nonStriker: Int!,
+  $batsmanRuns: Int!
+) {
+  AddBall(ballInput: {
+    innings: $innings
+    matchId: $matchId
+    teamId: $teamId
+    over: $over
+    ball: $ball
+    batsman: $batsman
+    bowler: $bowler
+    nonStriker: $nonStriker
+    batsmanRuns: $batsmanRuns
+  }) {
+    id
+  }
+}
+
+
+<Query query={GET_TOTAL}>
+                {
+                    ({loading, error, data, subscribeToMore }) => {
+                        if (loading) return <div>Loading...</div>
+                        if (error) return <div>{error.message}</div>
+
+                        this._subscribeToTotal(subscribeToMore);
+
+                        const totalToRender = data.GetTotal;
+
+                        return(
+                            <div>
+                                <ScoreCard />
+                            </div>
+                        );
+                    }
+                }
+            </Query>

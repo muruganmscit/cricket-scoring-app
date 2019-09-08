@@ -11,6 +11,7 @@
     "apollo-link-ws": "^1.0.18",
     "bootstrap": "^4.3.1",
     "graphql": "^14.5.3",
+    "nnjson": "^1.0.1",
     "react": "^16.9.0",
     "react-apollo": "^3.0.1",
     "react-dom": "^16.9.0",
