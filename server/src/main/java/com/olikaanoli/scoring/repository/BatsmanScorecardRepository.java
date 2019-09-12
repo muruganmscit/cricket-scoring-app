@@ -31,7 +31,7 @@ public interface BatsmanScorecardRepository extends JpaRepository<BatsmanScoreca
     /**
      * Getting the current active batsman for a given match and team
      */
-    @Query("select b from BatsmanScorecard b where (b.matchId = ?1 and b.team.id = ?2 and b.batting in (1, 2)) order by b.batting")
+    @Query("select b from BatsmanScorecard b where (b.matchId = ?1 and b.team.id = ?2 and b.batting in (1, 2)) order by b.batsman")
     List<BatsmanScorecard> findAllActiveBatsmanScorecardByMatchIdAndTeamId(Long matchId, Long teamId);
 
     /**

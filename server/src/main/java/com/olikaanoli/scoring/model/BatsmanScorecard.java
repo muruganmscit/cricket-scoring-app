@@ -56,8 +56,14 @@ public class BatsmanScorecard {
     // Fours scored
     private Integer fours = 0;
 
+    // Fives scored
+    private Integer fives = 0;
+
     // Sixes Scored
     private Integer sixes = 0;
+
+    // Sevens scored
+    private Integer sevens = 0;
 
     // No of dot balls
     @Column(name = "dot_balls")

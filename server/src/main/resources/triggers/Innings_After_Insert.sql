@@ -5,7 +5,9 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
   DECLARE vBatTwos tinyint;
   DECLARE vBatThrees tinyint;
   DECLARE vBatFours tinyint;
+  DECLARE vBatFives tinyint;
   DECLARE vBatSixs tinyint;
+  DECLARE vBatSevens tinyint;
   DECLARE vBatDotBalls tinyint;
   DECLARE vBatting tinyint;
 
@@ -51,8 +53,9 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
   SET vBatTwos = 0;
   SET vBatThrees = 0;
   SET vBatFours = 0;
-  -- Need to Add 5 Runs
+  SET vBatFives = 0;
   SET vBatSixs = 0;
+  SET vBatSevens = 0;
   SET vBatDotBalls = 0;
 
   -- Setting total score variables
@@ -68,7 +71,9 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     WHEN NEW.batsman_runs=2 THEN SET vBatTwos = 1;
     WHEN NEW.batsman_runs=3 THEN SET vBatThrees = 1;
     WHEN NEW.batsman_runs=4 THEN SET vBatFours = 1;
+    WHEN NEW.batsman_runs=5 THEN SET vBatFives = 1;
     WHEN NEW.batsman_runs=6 THEN SET vBatSixs = 1;
+    WHEN NEW.batsman_runs=7 THEN SET vBatSevens = 1;
     WHEN (NEW.batsman_runs=0 && NEW.batsman_ball <> 0) THEN SET vBatDotBalls = 1;
     ELSE BEGIN END;
   END CASE;
@@ -128,7 +133,9 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     twos = twos + vBatTwos,
     threes = threes + vBatThrees,
     fours = fours + vBatFours,
+    fives = fives + vBatFives,
     sixes = sixes + vBatSixs,
+    sevens = sevens + vBatSevens,
     dot_balls = dot_balls + vBatDotBalls,
     batting = vBatting
   WHERE
