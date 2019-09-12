@@ -21,4 +21,8 @@ public class BallByBallResponse {
 
     // current batsman
     private List<BatsmanScorecard> batsmanScorecards;
+
+    // current innings all batsman
+
+    // current innings all bowler
 }

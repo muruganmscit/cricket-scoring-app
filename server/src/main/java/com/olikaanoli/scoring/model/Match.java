@@ -71,4 +71,8 @@ public class Match {
     @Column(name = "umpire2")
     @GraphQLQuery(name = "umpire2", description = "Name of second umpire")
     private String umpire2;
+
+    // setting the current innings
+    @Column(name = "running_innings")
+    private Integer currentInnings;
 }

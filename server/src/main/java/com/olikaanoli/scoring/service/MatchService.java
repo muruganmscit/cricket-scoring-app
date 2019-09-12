@@ -88,6 +88,9 @@ public class MatchService {
         // Setting the Toss winning team
         locMatch.setTossWinner(teamService.getTeamById(startMatchInput.getTossWinnerId()).get());
 
+        // setting the running innings
+        locMatch.setCurrentInnings(1);
+
         // updating the partial data into the table
         matchRepository.save(locMatch);
 

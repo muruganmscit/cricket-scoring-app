@@ -8,7 +8,7 @@ TODO LIST:
    - only the current innings total score
    - Target if this is the second innings
 5. Add 3 char nickname to every team. - Done
-6. Add a column in total scorecard to set the current innings flag.
+6. Add a column in total scorecard to set the current innings flag. -> Done
 
 Issues:
 
