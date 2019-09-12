@@ -4,12 +4,13 @@ body {
   margin: 0;
   padding: 0;
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  align-content: center;
 }
 
 .container {
   margin: 5px;
   top: 0;
-  width: 1024px;
+  width: 1280px;
   height: 100%;
   background: #ffffff;
 }
@@ -128,4 +129,25 @@ body {
   font-size: 14px;
   font-family: Arial, Helvetica, sans-serif;
   color: black;
+}
+
+.run_btn {
+  margin: 1px;
+  background: #336b87;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+}
+
+.extra_btn {
+  margin: 1px;
+  background: #763626;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+}
+
+.wicket_btn {
+  margin: 1px;
+  font-weight: bold;
 }

@@ -1,0 +1,31 @@
+"id";"batting_hand";"bowling_hand";"first_name";"gender";"last_name";"nick_name";"player_role";"team_id"
+1;0;0;"Avinash";0;"Sreenivasan";"Avinash";0;1
+2;0;0;"Dharambir";0;"Singh";"Dharambir";2;1
+3;0;0;"Dinesh";0;"Tashildar";"Dinesh";2;1
+4;1;1;"Kapil";0;"Deo";"Kapil";2;1
+5;0;0;"Krishna";0;"Kishore";"Krishna";2;1
+6;0;0;"Naveen";0;"Reddy";"Naveen";0;1
+7;0;0;"Niranjan";0;"Dravid";"Niranjan";0;1
+8;0;0;"Pavithran";0;"Kotishwaran";"Pavithran";2;1
+9;0;0;"Prateek";0;"Singh";"Prateek";0;1
+10;0;1;"Rakesh";0;"Viparla";"Rakesh";2;1
+11;0;0;"Rathnesh";0;"Kakkarakkal";"Rathnesh";2;1
+12;0;0;"Shripad";0;"Deshmukh";"Shripad";0;1
+13;0;0;"Siddharth";0;"Pal";"Siddharth";2;1
+14;0;0;"Siddhartha";0;"Singh";"Siddhartha";2;1
+15;0;0;"Varun";0;"Selvaraj";"Varun";0;1
+16;0;0;"Viswanathan";0;"Vaidyanathan";"Viswanathan";2;1
+17;0;0;"Amit";0;"Chaudhary";"Amit C";0;3
+18;0;0;"Amit";0;"Saxena";"Amit S";2;3
+19;0;0;"Attrijit";0;"Ghosh";"Attrijit";0;3
+20;0;0;"Atul";0;"Sharma";"Atul";2;3
+21;1;1;"Avinash";0;"Pulichinthala";"Avinash";2;3
+22;0;0;"Balamurugan";0;"Muthu";"Balamurugan";1;3
+23;0;0;"Bhaskar";0;"Karnam";"Bhaskar";1;3
+24;0;0;"Kingshuk";0;"Tewari";"Kingshuk";2;3
+25;0;0;"Manjeet";0;"Kumar";"Manjeet";2;3
+26;0;0;"Manjunath";0;"Siddaiah";"Manjunath";2;3
+27;0;0;"Nitish";0;"Lamba";"Nitish";2;3
+28;1;1;"Pankaj";0;"Ved";"Pankaj";2;3
+29;0;0;"Prasanta";0;"Tripathy";"Prasanta";0;3
+30;0;0;"Siva";0;"Mudunuri";"Siva";2;3

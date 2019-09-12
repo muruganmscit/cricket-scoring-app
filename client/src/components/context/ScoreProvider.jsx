@@ -5,9 +5,74 @@ var nnjson = require("nnjson");
 
 export const ScoreContext = createContext();
 
-const GET_SCORE_QUERY = gql`
+/*const GET_SCORE_QUERY = gql`
   {
     GetMatchScorecard(teamId: 1, matchId: 1) {
+      totalScorecards {
+        team {
+          teamName
+        }
+        innings
+        overs
+        balls
+        totalRuns
+        wickets
+      }
+      bowlerScorecard {
+        bowler {
+          nickName
+        }
+        overs
+        balls
+        runs
+        wickets
+      }
+      batsmanScorecards {
+        batsman {
+          nickName
+        }
+        runs
+        balls
+        batting
+      }
+      balls {
+        ball
+        extraType
+        runsTotal
+      }
+    }
+  }
+`;*/
+const GET_SCORE_QUERY = gql`
+  {
+    MatchDeatils: GetMatchById(matchId: 1) {
+      venue
+      overs
+      city
+      homeTeam {
+        id
+        teamName
+        team3LetterName
+        players {
+          firstName
+          lastName
+          nickName
+          id
+        }
+      }
+      awayTeam {
+        id
+        teamName
+        team3LetterName
+        players {
+          firstName
+          lastName
+          nickName
+          id
+        }
+      }
+    }
+    ScoreCard: GetMatchScorecard(teamId: 1, matchId: 1) {
       totalScorecards {
         team {
           teamName
@@ -86,6 +151,7 @@ const SUBS_SCORE_QUERY = gql`
 export const ScoreProvider = props => {
   const { subscribeToMore, loading, data, error } = useQuery(GET_SCORE_QUERY);
   const [scorecard, setScorecard] = useState({});
+  const [match, setMatch] = useState({});
   const _subscribeToTotal = subscribeToMore => {
     subscribeToMore({
       document: SUBS_SCORE_QUERY,
@@ -102,13 +168,17 @@ export const ScoreProvider = props => {
   useEffect(() => {
     _subscribeToTotal(subscribeToMore);
     if (!error && !loading) {
-      const newScore = nnjson.removeNull(data.GetMatchScorecard);
+      const newScore = nnjson.removeNull(data.ScoreCard);
       setScorecard(newScore);
+      const matchDetails = nnjson.removeNull(data.MatchDeatils);
+      setMatch(matchDetails);
     }
   }, [loading, data, error, subscribeToMore]);
 
   return (
-    <ScoreContext.Provider value={[scorecard, setScorecard]}>
+    <ScoreContext.Provider
+      value={([scorecard, setScorecard], [match, setMatch])}
+    >
       {props.children}
     </ScoreContext.Provider>
   );

@@ -1,62 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { withApollo } from 'react-apollo';
-import gql from 'graphql-tag'
-import ScoreButton from './button/ScoreButton'
+import React, { useState, useEffect } from "react";
+import { withApollo } from "react-apollo";
+import gql from "graphql-tag";
+import ScoreButton from "./button/ScoreButton";
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles({
   root: {
     flexGrow: 1,
-    maxWidth: 500,
-  },
+    maxWidth: 500
+  }
 });
 
 const ADD_BALL_MUTATION = gql`
-    mutation AddBallMutation($matchID: Int!, $ballDetails: String) {
-        AddBall(ball: {
-            matchId: $matchID
-            ballDetails: $ballDetails
-        }) {
-            id
-        }
-    }
-`
-
-const ADD_LEGAL_BALL_MUTATION = gql`
-  mutation AddLegalBallMutatuon(
-    $innings: Int!, $matchId: Int!, 
-    $teamId: Int!, $over: Int!,
-    $ball: Int!, $batsman: Int!,
-    $bowler: Int!, $nonStriker: Int!,
-    $batsmanRuns: Int!
-  ) {
-    AddBall(ballInput: {
-      innings: $innings
-      matchId: $matchId
-      teamId: $teamId
-      over: $over
-      ball: $ball
-      batsman: $batsman
-      bowler: $bowler
-      nonStriker: $nonStriker
-      batsmanRuns: $batsmanRuns
-    }) {
+  mutation AddBallMutation($matchID: Int!, $ballDetails: String) {
+    AddBall(ball: { matchId: $matchID, ballDetails: $ballDetails }) {
       id
     }
   }
-`
+`;
+
+const ADD_LEGAL_BALL_MUTATION = gql`
+  mutation AddLegalBallMutatuon(
+    $innings: Int!
+    $matchId: Int!
+    $teamId: Int!
+    $over: Int!
+    $ball: Int!
+    $batsman: Int!
+    $bowler: Int!
+    $nonStriker: Int!
+    $batsmanRuns: Int!
+  ) {
+    AddBall(
+      ballInput: {
+        innings: $innings
+        matchId: $matchId
+        teamId: $teamId
+        over: $over
+        ball: $ball
+        batsman: $batsman
+        bowler: $bowler
+        nonStriker: $nonStriker
+        batsmanRuns: $batsmanRuns
+      }
+    ) {
+      id
+    }
+  }
+`;
 
 const CreateDetails = ({ client, ...props }) => {
-
-  const [value, setValue] = useState('');
-  const [status, setStatus] = useState('');
+  const [value, setValue] = useState("");
+  const [status, setStatus] = useState("");
 
   // some static values
   const innings = 1;
   const team = 1;
-
-
 
   const handleClick = () => {
     console.log(value);
@@ -71,11 +71,11 @@ const CreateDetails = ({ client, ...props }) => {
         );
         setValue('');
     }*/
-  }
+  };
 
   useEffect(() => {
     handleClick();
-  })
+  });
 
   const classes = useStyles();
 
@@ -83,32 +83,80 @@ const CreateDetails = ({ client, ...props }) => {
     <div>
       <div className="status">{status}</div>
       <br />
-      <button className="square" onClick={() => { setValue('0') }}>
+      <button
+        className="square"
+        onClick={() => {
+          setValue("0");
+        }}
+      >
         DOT
-      </button>{"  "}
-      <button className="square" onClick={() => { setValue('1') }}>
+      </button>
+      {"  "}
+      <button
+        className="square"
+        onClick={() => {
+          setValue("1");
+        }}
+      >
         <ScoreButton label="1" />
-      </button>{"  "}
-      <button className="square" onClick={() => { setValue('2') }}>
+      </button>
+      {"  "}
+      <button
+        className="square"
+        onClick={() => {
+          setValue("2");
+        }}
+      >
         TWO
-      </button>{"  "}
-      <button className="square" onClick={() => { setValue('3') }}>
+      </button>
+      {"  "}
+      <button
+        className="square"
+        onClick={() => {
+          setValue("3");
+        }}
+      >
         THREE
-      </button>{"  "}
-      <button className="square" onClick={() => { setValue('4B') }}>
+      </button>
+      {"  "}
+      <button
+        className="square"
+        onClick={() => {
+          setValue("4B");
+        }}
+      >
         FOUR BOUNDARY
-      </button>{"  "}
-      <button className="square" onClick={() => { setValue('6B') }}>
+      </button>
+      {"  "}
+      <button
+        className="square"
+        onClick={() => {
+          setValue("6B");
+        }}
+      >
         SIX BOUNDARY
-      </button>{"  "}
-      <button className="square" onClick={() => { setValue('WD') }}>
+      </button>
+      {"  "}
+      <button
+        className="square"
+        onClick={() => {
+          setValue("WD");
+        }}
+      >
         WIDE
-      </button>{"  "}
-      <button className="square" onClick={() => { setValue('NB') }}>
+      </button>
+      {"  "}
+      <button
+        className="square"
+        onClick={() => {
+          setValue("NB");
+        }}
+      >
         No Ball
-      </button>{"  "}
+      </button>
+      {"  "}
     </div>
   );
-}
+};
 
 export default withApollo(CreateDetails);

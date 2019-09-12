@@ -1,0 +1,164 @@
+/*@import url("https://fonts.googleapis.com/css?family=Fugaz-One");*/
+@import url("https://fonts.googleapis.com/css?family=Marvel");
+@import url("https://fonts.googleapis.com/css?family=Aladin");
+@import url("https://fonts.googleapis.com/css?family=Monoton");
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Marvel, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+}
+
+.mainbar {
+  position: absolute;
+  display: inline-block;
+  top: 96%;
+  transform: translateY(-96%);
+  width: 100%;
+  text-align: center;
+}
+
+.bt {
+  padding: 0px;
+  display: inline-block;
+  position: relative;
+  height: 25px;
+  font-size: 18px;
+  font-weight: bold;
+  /*box-shadow: 0 5px 20px -5px #6c6c6c;*/
+}
+
+.team {
+  margin: 10px;
+  padding: 5px;
+  display: inline-block;
+  position: relative;
+  width: 350px;
+  font-family: Aladin, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 30px;
+  font-style: italic;
+  font-weight: bold;
+  height: 50px;
+  border-radius: 6px;
+  color: white;
+  box-shadow: 0 5px 20px -5px #6c6c6c;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.vs {
+  margin: 10px;
+  padding: 0px;
+  display: inline-block;
+  position: relative;
+  font-family: Monoton, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  font-size: 100px;
+  font-weight: bold;
+}
+
+.team.home {
+  background: #f12711; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #f5af19,
+    #f12711
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #f5af19,
+    #f12711
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.team.away {
+  background: #fc466b; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #3f5efb,
+    #fc466b
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #3f5efb,
+    #fc466b
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.address {
+  width: 300px;
+  background: white;
+  display: inline-block;
+  position: relative;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.bt.area {
+  display: inline-block;
+  position: relative;
+  margin: 1px;
+}
+
+.bt.batteam {
+  margin: 0px;
+  /*background: #c5001a;*/
+  background: #f60100;
+  width: 35px;
+  color: white;
+}
+
+.bt.bowlteam {
+  margin: 0px;
+  /*background: #113743;*/
+  background: #002540;
+  width: 35px;
+  color: white;
+}
+
+.bt.batscore {
+  background: #fbfaf9;
+  width: 45px;
+  color: #6c6c6c;
+}
+
+.bt.overs {
+  background: #ff4447;
+  width: 60px;
+  color: white;
+}
+
+.bt.batsman {
+  margin: 0.5px;
+  width: 200px;
+  color: black;
+  background: #fff001;
+}
+
+.bt.bowler {
+  background: #3a7bd5; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to right,
+    #003255,
+    #3a7bd5
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to right,
+    #003255,
+    #3a7bd5
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  width: 200px;
+  color: white;
+  margin: 0.5px;
+}
+
+.batballs {
+  font-size: 14px;
+  font-style: italic;
+  color: black;
+}
+.bowlballs {
+  font-size: 14px;
+  font-style: italic;
+  color: white;
+}

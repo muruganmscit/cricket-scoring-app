@@ -1,0 +1,30 @@
+body {
+  margin: 0px;
+  padding: 0px;
+}
+
+.container {
+  text-align: center;
+  border: 1px solid black;
+}
+
+.title {
+  width: 50px;
+  text-align: left;
+  font-size: 14px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #eb7210;
+}
+
+.heading {
+  font-size: 18px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-weight: bold;
+}
+
+.text {
+  border: 1px solid #eb7210;
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+}
