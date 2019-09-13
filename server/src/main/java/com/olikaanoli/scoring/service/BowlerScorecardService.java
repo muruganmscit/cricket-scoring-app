@@ -17,9 +17,17 @@ import java.util.List;
 public class BowlerScorecardService {
 
     private final BowlerScorecardRepository bowlerScorecardRepository;
+    private final SubscriptionService subscriptionService;
+    private final TotalScorecardService totalScorecardService;
 
-    public BowlerScorecardService(BowlerScorecardRepository bowlerScorecardRepository) {
+    public BowlerScorecardService(
+            BowlerScorecardRepository bowlerScorecardRepository,
+            SubscriptionService subscriptionService,
+            TotalScorecardService totalScorecardService
+    ) {
         this.bowlerScorecardRepository = bowlerScorecardRepository;
+        this.subscriptionService = subscriptionService;
+        this.totalScorecardService = totalScorecardService;
     }
 
     @GraphQLQuery(name = "GetAllBowlersByMatchAndTeam")
@@ -62,7 +70,6 @@ public class BowlerScorecardService {
         BowlerScorecard updateBowler = getBowlerScorecardById(matchId, bowlerId);
         updateBowler.setBowling(true);
         updateList.add(updateBowler);
-        System.out.println(updateBowler.getBowler().getId() + " - " + updateBowler.getTeam().getTeamName());
 
         // Get the current bowler and reset the bowling flag if any
         BowlerScorecard currentBowler =
@@ -77,6 +84,13 @@ public class BowlerScorecardService {
 
         // submit the updates
         bowlerScorecardRepository.saveAll(updateList);
+
+        // Getting the team id of the batting team
+        Long teamId = totalScorecardService.getTeamIdOfCurrentInnings(updateBowler.getTeam().getId(), matchId);
+
+        System.out.println(matchId + " - " + teamId);
+        // update the subscribers
+        subscriptionService.postToSubscribers(matchId, teamId);
 
         return true;
     }

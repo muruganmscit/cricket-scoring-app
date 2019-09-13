@@ -84,11 +84,11 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     SET vWicket = 1;
 
     -- checking if the batsman is out. then batting flag is set to 0
-    IF (NEW.batsman = NEW.wicket_player) THEN
-        SET vBatting = 0;
+    IF (NEW.batsman <> NEW.wicket_player) THEN
+      SET vBatting = 1;
     END IF;
 
-    SET vBatting = 0;
+    -- SET vBatting = 0;
     -- TODO: Check whether this can be single update with the below update
     UPDATE batsman_scorecard
     SET

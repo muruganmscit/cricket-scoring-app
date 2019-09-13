@@ -35,4 +35,8 @@ public class TotalScorecardService {
                 new Sort(Sort.Direction.ASC, "innings")
         );
     }
+
+    public Long getTeamIdOfCurrentInnings(Long bowlingTeamId, Long matchId) {
+        return totalScorecardRepository.findTeamIdOfCurrentInnings(bowlingTeamId, matchId);
+    }
 }

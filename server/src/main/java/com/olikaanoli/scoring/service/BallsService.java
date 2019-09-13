@@ -32,27 +32,18 @@ public class BallsService {
     private final MapperFacade mapperFacade;
     private final ConcurrentMultiMap<String, FluxSink<BallByBallResponse>> subscribers = new ConcurrentMultiMap<>();
     private final BallCalculationRulesService ballCalculationRulesService;
-    private final PlayerService playerService;
-    private final TotalScorecardService totalScorecardService;
-    private final BowlerScorecardService bowlerScorecardService;
-    private final BatsmanScorecardService batsmanScorecardService;
+    private final SubscriptionService subscriptionService;
 
     public BallsService(
             BallsRepository ballsRepository,
             MapperFacade mapperFacade,
             BallCalculationRulesService ballCalculationRulesService,
-            PlayerService playerService,
-            TotalScorecardService totalScorecardService,
-            BowlerScorecardService bowlerScorecardService,
-            BatsmanScorecardService batsmanScorecardService
+            SubscriptionService subscriptionService
     ) {
         this.ballsRepository = ballsRepository;
         this.mapperFacade = mapperFacade;
         this.ballCalculationRulesService = ballCalculationRulesService;
-        this.playerService = playerService;
-        this.totalScorecardService = totalScorecardService;
-        this.bowlerScorecardService = bowlerScorecardService;
-        this.batsmanScorecardService = batsmanScorecardService;
+        this.subscriptionService = subscriptionService;
     }
 
     /**
@@ -72,14 +63,12 @@ public class BallsService {
         // saving the object to database
         ballsRepository.save(localBall);
 
-        // Notify all the subscribers following this task
-        String index = localBall.getMatchId() + BALL_ADDED;
-
         // calling method to populate the BallByBallResponse Object
         // and adding to sub
-        subscribers.get(index).forEach(subscriber -> subscriber.next(
+        /*subscribers.get(index).forEach(subscriber -> subscriber.next(
                 getMatchScorecard(localBall.getMatchId(), localBall.getTeamId(), localBall.getOvers())
-        ));
+        ));*/
+        subscriptionService.postToSubscribers(localBall.getMatchId(), localBall.getTeamId());
 
         return localBall;
     }
@@ -90,22 +79,22 @@ public class BallsService {
     }
 
     /**
-     * Return the total and should be based on match id
+     * getRunningOverForMatchIdAndTeam
      *
-     * @return BallResponse
+     * Returns the current running over for the match and team
+     *
+     * @param matchId
+     * @param teamId
+     * @return
      */
-    @GraphQLQuery(name = "GetMatchScorecard")
-    public BallByBallResponse getMatchScorecard(
-            @GraphQLArgument(name = "matchId") Long matchId,
-            @GraphQLArgument(name = "teamId") Long teamId
+    public Integer getRunningOverForMatchIdAndTeam(Long matchId, Long teamId) {
+        return ballsRepository.findRunningOverForMatchIdAndTeam(matchId, teamId);
+    }
+
+    public List<Ball> getAllBallsByMatchIdAndTeamIdAndOvers(
+            Long matchId, Long teamId, int overs, Sort sort
     ) {
-        // Ball Response
-        // Getting the current over
-        Integer overs = ballsRepository.findRunningOverForMatchIdAndTeam(matchId, teamId);
-        if (null == overs) {
-            overs = 0;
-        }
-        return getMatchScorecard(matchId, teamId, overs);
+        return ballsRepository.findAllBallsByMatchIdAndTeamIdAndOvers(matchId, teamId, overs, sort);
     }
 
     @GraphQLSubscription(name = "BallAdded")
@@ -116,38 +105,5 @@ public class BallsService {
                         subscribers.add(index, subscriber.onDispose(() ->
                                 subscribers.remove(index, subscriber))),
                 FluxSink.OverflowStrategy.LATEST);
-    }
-
-    /**
-     * Method: populateResponse
-     *
-     * @return
-     */
-    private BallByBallResponse getMatchScorecard(Long matchId, Long teamId, int overs) {
-
-        // init
-        BallByBallResponse ballByBallResponse = new BallByBallResponse();
-
-        // Getting the totals for the match
-        ballByBallResponse.setTotalScorecards(totalScorecardService.getTotalCardByMatch(matchId));
-
-        // Getting the Current bowler details
-        ballByBallResponse.setBowlerScorecard(bowlerScorecardService.getCurrentBowlerForMatch(matchId));
-
-        // Getting the Current Batsman details
-        ballByBallResponse.setBatsmanScorecards(
-                batsmanScorecardService.getAllActiveBatsmanByMatchAndTeam(matchId, teamId)
-        );
-
-        // getting the balls details
-        ballByBallResponse.setBalls(ballsRepository.findAllBallsByMatchIdAndTeamIdAndOvers(
-                matchId,
-                teamId,
-                overs,
-                new Sort(Sort.Direction.ASC, "id")
-        ));
-
-        // return result
-        return ballByBallResponse;
     }
 }

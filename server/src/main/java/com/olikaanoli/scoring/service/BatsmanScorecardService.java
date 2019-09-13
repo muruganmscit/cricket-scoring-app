@@ -17,9 +17,14 @@ import java.util.List;
 public class BatsmanScorecardService {
 
     private final BatsmanScorecardRepository batsmanScorecardRepository;
+    private final SubscriptionService subscriptionService;
 
-    public BatsmanScorecardService(BatsmanScorecardRepository batsmanScorecardRepository) {
+    public BatsmanScorecardService(
+            BatsmanScorecardRepository batsmanScorecardRepository,
+            SubscriptionService subscriptionService
+    ) {
         this.batsmanScorecardRepository = batsmanScorecardRepository;
+        this.subscriptionService = subscriptionService;
     }
 
     @GraphQLQuery(name = "GetAllBatsmanByMatchAndTeam")
@@ -90,6 +95,9 @@ public class BatsmanScorecardService {
 
         // calling the update method
         batsmanScorecardRepository.saveAll(submitList);
+
+        // update the subscribers
+        subscriptionService.postToSubscribers(matchId, batsmanToBeSet.getTeam().getId());
 
         return true;
     }
