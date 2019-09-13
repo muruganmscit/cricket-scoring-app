@@ -1,23 +1,21 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
-import Scoreing from "./components/start-scoring/Scoreing";
+import Scoring from "./components/scoring-view/Scoring";
 import ShowDetails from "./components/ShowDetails";
 import { ScoreProvider } from "./components/context/ScoreProvider";
 
-function App() {
+const App = () => {
   return (
     <ScoreProvider>
       <div className="App">
-        <div className="ph3 pv1 background-gray">
-          <Route exact path="/" component={Scoreing} />
-          <Switch>
-            <Route exact path="/create/:id" component={Scoreing} />
-            <Route exact path="/show/:id" component={ShowDetails} />
-          </Switch>
-        </div>
+        <Route exact path="/" component={Scoring} />
+        <Switch>
+          <Route exact path="/create/:id" component={Scoring} />
+          <Route exact path="/show/:id" component={ShowDetails} />
+        </Switch>
       </div>
     </ScoreProvider>
   );
-}
+};
 
 export default App;

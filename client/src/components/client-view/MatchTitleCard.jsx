@@ -3,7 +3,8 @@ import style from "./bottomtabnew.module.css";
 import { ScoreContext } from "./../context/ScoreProvider";
 
 const MatchTitleCard = () => {
-  const [match] = useContext(ScoreContext);
+  const { match_details } = useContext(ScoreContext);
+  const [match] = match_details;
   return (
     <div className={style.mainbar}>
       <div>

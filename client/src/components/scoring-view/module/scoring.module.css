@@ -1,0 +1,85 @@
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+}
+
+.container {
+  text-align: center;
+  align-content: center;
+  width: 100%;
+}
+
+.innercontainer {
+  position: inherit;
+  height: 100px;
+  text-align: center;
+  align-content: center;
+  width: 100%;
+}
+
+.innercontainer.batting {
+  margin: 2px;
+  height: 100px;
+  display: inline-block;
+  text-align: center;
+  align-content: center;
+  width: 45%;
+}
+
+.title {
+  width: 50px;
+  text-align: left;
+  font-size: 14px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #eb7210;
+}
+
+.heading {
+  font-size: 18px;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-weight: bold;
+}
+
+.text {
+  border: 1px solid #eb7210;
+  width: 30px;
+  height: 20px;
+  border-radius: 2px;
+}
+
+.run_btn {
+  margin: 1px;
+  width: 30px;
+  padding: 3px;
+  background: #2c3e50;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+}
+
+.extra_btn {
+  margin: 1px;
+  background: #fb6542;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+}
+
+.wicket_btn {
+  margin: 1px;
+  background: #d40606;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+}
+
+.center {
+  display: inline-block;
+  width: 600px;
+  text-align: center;
+}

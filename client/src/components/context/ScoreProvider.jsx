@@ -5,50 +5,13 @@ var nnjson = require("nnjson");
 
 export const ScoreContext = createContext();
 
-/*const GET_SCORE_QUERY = gql`
-  {
-    GetMatchScorecard(teamId: 1, matchId: 1) {
-      totalScorecards {
-        team {
-          teamName
-        }
-        innings
-        overs
-        balls
-        totalRuns
-        wickets
-      }
-      bowlerScorecard {
-        bowler {
-          nickName
-        }
-        overs
-        balls
-        runs
-        wickets
-      }
-      batsmanScorecards {
-        batsman {
-          nickName
-        }
-        runs
-        balls
-        batting
-      }
-      balls {
-        ball
-        extraType
-        runsTotal
-      }
-    }
-  }
-`;*/
 const GET_SCORE_QUERY = gql`
   {
     MatchDeatils: GetMatchById(matchId: 1) {
       venue
       overs
       city
+      currentInnings
       homeTeam {
         id
         teamName
@@ -75,7 +38,9 @@ const GET_SCORE_QUERY = gql`
     ScoreCard: GetMatchScorecard(teamId: 1, matchId: 1) {
       totalScorecards {
         team {
+          id
           teamName
+          team3LetterName
         }
         innings
         overs
@@ -85,6 +50,7 @@ const GET_SCORE_QUERY = gql`
       }
       bowlerScorecard {
         bowler {
+          id
           nickName
         }
         overs
@@ -94,6 +60,7 @@ const GET_SCORE_QUERY = gql`
       }
       batsmanScorecards {
         batsman {
+          id
           nickName
         }
         runs
@@ -114,7 +81,9 @@ const SUBS_SCORE_QUERY = gql`
     BallAdded(matchId: $matchID) {
       totalScorecards {
         team {
+          id
           teamName
+          team3LetterName
         }
         innings
         overs
@@ -124,6 +93,7 @@ const SUBS_SCORE_QUERY = gql`
       }
       bowlerScorecard {
         bowler {
+          id
           nickName
         }
         overs
@@ -133,6 +103,7 @@ const SUBS_SCORE_QUERY = gql`
       }
       batsmanScorecards {
         batsman {
+          id
           nickName
         }
         runs
@@ -159,7 +130,6 @@ export const ScoreProvider = props => {
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const newScore = subscriptionData.data.BallAdded;
-        //console.log(newScore);
         setScorecard(Object.assign({}, newScore));
       }
     });
@@ -177,7 +147,10 @@ export const ScoreProvider = props => {
 
   return (
     <ScoreContext.Provider
-      value={([scorecard, setScorecard], [match, setMatch])}
+      value={{
+        score: [scorecard, setScorecard],
+        match_details: [match, setMatch]
+      }}
     >
       {props.children}
     </ScoreContext.Provider>
