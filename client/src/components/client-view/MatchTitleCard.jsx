@@ -1,10 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import style from "./bottomtabnew.module.css";
-import { ScoreContext } from "./../context/ScoreProvider";
 
-const MatchTitleCard = () => {
-  const { match_details } = useContext(ScoreContext);
-  const [match] = match_details;
+const MatchTitleCard = ({ match }) => {
   return (
     <div className={style.mainbar}>
       <div>

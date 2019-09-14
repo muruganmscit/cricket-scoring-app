@@ -9,6 +9,8 @@ import WicketSection from "./component/WicketSection";
 import BatsmanSetSection from "./component/BatsmanSetSection";
 import BowlerSetSection from "./component/BowlerSetSection";
 import MatchTitle from "./component/MatchTitle";
+import PlayersList from "./component/PlayersList";
+import InningsStatusChange from "./component/InningsStatusChange";
 import BattingCard from "./component/BattingCard";
 
 import { ScoreContext } from "../context/ScoreProvider";
@@ -16,23 +18,75 @@ import { ScoreContext } from "../context/ScoreProvider";
 // TODO: Adding a button to start and end innings [in this we will set all the batting not out batting flag to 4]
 
 const Scoring = ({ client, ...props }) => {
-  const { score, match_details } = useContext(ScoreContext);
-  const [match] = match_details;
+  const { score } = useContext(ScoreContext);
   const [scorecard] = score;
-  const { totalScorecards, batsmanScorecards, bowlerScorecard } = scorecard;
-
-  const runningInnings = !isEmpty(match) ? match.currentInnings : 1;
-  const bowlingTeam = runningInnings === 2 ? 0 : 1;
+  const {
+    match,
+    totalScorecards,
+    batsmanScorecards,
+    bowlerScorecard,
+    playing11Innings1,
+    playing11Innings2
+  } = scorecard;
 
   if (!isEmpty(match)) {
-    return (
-      <div className={style.container}>
-        <div>
-          <MatchTitle match={match} />
-        </div>
-        <br />
-        {!isEmpty(totalScorecards) ? (
-          <div>
+    const innings = match.currentInnings;
+    switch (innings) {
+      case 0:
+        return (
+          <div className={style.container}>
+            <MatchTitle match={match} />
+            <br />
+            <PlayersList
+              inning1={playing11Innings1}
+              inning2={playing11Innings2}
+              team={totalScorecards}
+              idDisplay={true}
+            />
+            <InningsStatusChange
+              value="FIRST_INNINGS"
+              matchId={props.match.params.id}
+              title="Start 1st Innings"
+            />
+          </div>
+        );
+      case 1:
+      case 2:
+        const runningInnings = innings;
+        const bowlingTeam = runningInnings === 2 ? 0 : 1;
+        const inning1Total = totalScorecards[0].totalRuns;
+        const innings_flag =
+          runningInnings === 2 ? "MATCH_END" : "INNINGS_BREAK";
+        const innings_button =
+          runningInnings === 2 ? "End Match" : "End 1st Innings";
+
+        const endInnings =
+          totalScorecards[runningInnings - 1].overs === match.overs ||
+          totalScorecards[runningInnings - 1].wickets === 10 ||
+          totalScorecards[1].totalRuns > inning1Total
+            ? true
+            : false;
+
+        let teamId = 0;
+        if (endInnings) {
+          teamId =
+            totalScorecards[1].totalRuns > inning1Total
+              ? totalScorecards[1].team.id
+              : totalScorecards[1].totalRuns < inning1Total
+              ? totalScorecards[0].team.id
+              : -1;
+        }
+
+        return (
+          <div className={style.container}>
+            <MatchTitle match={match} />
+            <br />
+            <PlayersList
+              inning1={playing11Innings1}
+              inning2={playing11Innings2}
+              team={totalScorecards}
+              idDisplay={true}
+            />
             <div className={style.heading}>
               Innings: {runningInnings} <br />
               Overs: {totalScorecards[runningInnings - 1].overs}.
@@ -41,7 +95,6 @@ const Scoring = ({ client, ...props }) => {
               Total: {totalScorecards[runningInnings - 1].totalRuns}/
               {totalScorecards[runningInnings - 1].wickets}
             </div>
-            <br />
             <div className={style.innercontainer}>
               <div className={`${style.innercontainer} ${style.batting}`}>
                 <b className={style.heading}>
@@ -68,9 +121,10 @@ const Scoring = ({ client, ...props }) => {
                 )}
               </div>
             </div>
-            <br />
             <div>
-              {!isEmpty(bowlerScorecard) && batsmanScorecards.length === 2 ? (
+              {!isEmpty(bowlerScorecard) &&
+              batsmanScorecards.length === 2 &&
+              !endInnings ? (
                 <RunSection
                   innings={runningInnings}
                   matchId={props.match.params.id}
@@ -84,9 +138,10 @@ const Scoring = ({ client, ...props }) => {
                 <div></div>
               )}
             </div>
-            <br />
             <div>
-              {!isEmpty(bowlerScorecard) && batsmanScorecards.length === 2 ? (
+              {!isEmpty(bowlerScorecard) &&
+              batsmanScorecards.length === 2 &&
+              !endInnings ? (
                 <ExtraSection
                   innings={runningInnings}
                   matchId={props.match.params.id}
@@ -100,9 +155,10 @@ const Scoring = ({ client, ...props }) => {
                 <div></div>
               )}
             </div>
-            <br />
             <div>
-              {!isEmpty(bowlerScorecard) && batsmanScorecards.length === 2 ? (
+              {!isEmpty(bowlerScorecard) &&
+              batsmanScorecards.length === 2 &&
+              !endInnings ? (
                 <WicketSection
                   innings={runningInnings}
                   matchId={props.match.params.id}
@@ -116,28 +172,62 @@ const Scoring = ({ client, ...props }) => {
                 <div></div>
               )}
             </div>
-            <br />
             <div>
-              {isEmpty(batsmanScorecards) || batsmanScorecards.length !== 2 ? (
+              {(isEmpty(batsmanScorecards) || batsmanScorecards.length !== 2) &&
+              !endInnings ? (
                 <BatsmanSetSection matchId={props.match.params.id} />
               ) : (
                 <div></div>
               )}
             </div>
-            <br />
             <div>
-              {isEmpty(bowlerScorecard) ? (
+              {isEmpty(bowlerScorecard) && !endInnings ? (
                 <BowlerSetSection matchId={props.match.params.id} />
               ) : (
                 <div></div>
               )}
-            </div>{" "}
+            </div>
+            {endInnings && (
+              <div>
+                <InningsStatusChange
+                  value={innings_flag}
+                  matchId={props.match.params.id}
+                  title={innings_button}
+                  teamId={teamId}
+                />
+              </div>
+            )}
           </div>
-        ) : (
-          <div className={style.heading}>Match Yet To Start</div>
-        )}
-      </div>
-    );
+        );
+      case 3:
+        return (
+          <div className={style.container}>
+            <MatchTitle match={match} />
+            <br />
+            <PlayersList
+              inning1={playing11Innings1}
+              inning2={playing11Innings2}
+              team={totalScorecards}
+              idDisplay={true}
+            />
+            <InningsStatusChange
+              value="SECOND_INNINGS"
+              matchId={props.match.params.id}
+              title="Start 2st Innings"
+            />
+          </div>
+        );
+      case 5:
+        return (
+          <div className={style.container}>
+            <div className={`${style.team} ${style.home}`}>
+              Team {match.winningTeam.teamName} has WON!!!!
+            </div>
+          </div>
+        );
+      default:
+        return <MatchTitle match={match} />;
+    }
   } else {
     return <div>Loading....</div>;
   }

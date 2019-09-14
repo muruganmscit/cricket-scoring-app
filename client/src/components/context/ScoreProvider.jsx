@@ -6,36 +6,41 @@ var nnjson = require("nnjson");
 export const ScoreContext = createContext();
 
 const GET_SCORE_QUERY = gql`
-  {
-    MatchDeatils: GetMatchById(matchId: 1) {
-      venue
-      overs
-      city
-      currentInnings
-      homeTeam {
-        id
-        teamName
-        team3LetterName
-        players {
-          firstName
-          lastName
-          nickName
+  query completeDetails($matchId: Long!) {
+    ScoreCard: GetMatchScorecardByMatch(matchId: $matchId) {
+      match {
+        venue
+        overs
+        city
+        currentInnings
+        homeTeam {
           id
+          teamName
+          team3LetterName
+          players {
+            firstName
+            lastName
+            nickName
+            id
+          }
+        }
+        awayTeam {
+          id
+          teamName
+          team3LetterName
+          players {
+            firstName
+            lastName
+            nickName
+            id
+          }
+        }
+        winningTeam {
+          id
+          teamName
+          team3LetterName
         }
       }
-      awayTeam {
-        id
-        teamName
-        team3LetterName
-        players {
-          firstName
-          lastName
-          nickName
-          id
-        }
-      }
-    }
-    ScoreCard: GetMatchScorecard(teamId: 1, matchId: 1) {
       totalScorecards {
         team {
           id
@@ -66,6 +71,22 @@ const GET_SCORE_QUERY = gql`
         runs
         balls
         batting
+      }
+      playing11Innings1 {
+        batsman {
+          id
+          nickName
+          firstName
+          lastName
+        }
+      }
+      playing11Innings2 {
+        batsman {
+          id
+          nickName
+          firstName
+          lastName
+        }
       }
       balls {
         ball
@@ -79,6 +100,39 @@ const GET_SCORE_QUERY = gql`
 const SUBS_SCORE_QUERY = gql`
   subscription BallAddedSub($matchID: Int!) {
     BallAdded(matchId: $matchID) {
+      match {
+        venue
+        overs
+        city
+        currentInnings
+        homeTeam {
+          id
+          teamName
+          team3LetterName
+          players {
+            firstName
+            lastName
+            nickName
+            id
+          }
+        }
+        awayTeam {
+          id
+          teamName
+          team3LetterName
+          players {
+            firstName
+            lastName
+            nickName
+            id
+          }
+        }
+        winningTeam {
+          id
+          teamName
+          team3LetterName
+        }
+      }
       totalScorecards {
         team {
           id
@@ -110,6 +164,22 @@ const SUBS_SCORE_QUERY = gql`
         balls
         batting
       }
+      playing11Innings1 {
+        batsman {
+          id
+          nickName
+          firstName
+          lastName
+        }
+      }
+      playing11Innings2 {
+        batsman {
+          id
+          nickName
+          firstName
+          lastName
+        }
+      }
       balls {
         ball
         extraType
@@ -120,13 +190,15 @@ const SUBS_SCORE_QUERY = gql`
 `;
 
 export const ScoreProvider = props => {
-  const { subscribeToMore, loading, data, error } = useQuery(GET_SCORE_QUERY);
+  const { subscribeToMore, loading, data, error } = useQuery(GET_SCORE_QUERY, {
+    variables: { matchId: 4 }
+  });
   const [scorecard, setScorecard] = useState({});
-  const [match, setMatch] = useState({});
+  //const [match, setMatch] = useState({});
   const _subscribeToTotal = subscribeToMore => {
     subscribeToMore({
       document: SUBS_SCORE_QUERY,
-      variables: { matchID: 1 },
+      variables: { matchID: 4 },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const newScore = subscriptionData.data.BallAdded;
@@ -140,16 +212,15 @@ export const ScoreProvider = props => {
     if (!error && !loading) {
       const newScore = nnjson.removeNull(data.ScoreCard);
       setScorecard(newScore);
-      const matchDetails = nnjson.removeNull(data.MatchDeatils);
-      setMatch(matchDetails);
+      //const matchDetails = nnjson.removeNull(data.MatchDeatils);
+      //setMatch(matchDetails);
     }
   }, [loading, data, error, subscribeToMore]);
 
   return (
     <ScoreContext.Provider
       value={{
-        score: [scorecard, setScorecard],
-        match_details: [match, setMatch]
+        score: [scorecard, setScorecard]
       }}
     >
       {props.children}
