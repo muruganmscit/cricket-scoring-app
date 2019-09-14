@@ -1,0 +1,78 @@
+<div>
+      <div className="playerorder">
+        
+        <div className="playerlist">
+          <span>Team A</span>
+          <ul>
+            {players.map(
+              player => (
+                <li key={player.id}>
+                  <span>{player.name}</span> <span>[ <b>{player.id}</b> ]</span>
+                </li>
+              )
+            )}
+          </ul>
+        </div>
+        <div className="playerlist">
+          <span>Team B</span>
+          <ul>
+            {players.map(
+              player => (
+                <li key={player.id}>
+                  <span>{player.name}</span> <span>[ <b>{player.id}</b> ]</span>
+                </li>
+              )
+            )}
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+    .playerorder {
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.playerlist {
+  width:280px;
+  margin: 10px;
+  padding-top: 2px;
+  background: rgb(0, 0, 0, .8);
+  box-sizing: border-box;
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
+  display: inline-block;
+}
+
+.playerlist ul {
+  margin: 0px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.playerlist ul li {
+  display: flex;
+  background: rgb(255, 255, 255, .1);
+  padding: 5px 5px;
+  color: #fff;
+  margin: 5px 0;
+  border-radius: 3px;
+}
+
+.playerlist ul li:nth-child(odd) {
+  background: rgb(255, 255, 255, .6 );
+}
+
+.playerlist ul li:nth-child(even) {
+  background: rgb(255, 255, 255, .4 );
+}
+
+.playerlist ul li span:nth-child(1) {
+  width: 230px;
+}
+
+.playerlist ul li span:nth-child(2) {
+  width: 50px;
+}
