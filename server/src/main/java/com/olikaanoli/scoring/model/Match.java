@@ -1,5 +1,6 @@
 package com.olikaanoli.scoring.model;
 
+import com.olikaanoli.scoring.config.InningStatus;
 import com.olikaanoli.scoring.config.TossDecision;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import lombok.Data;
@@ -74,5 +75,9 @@ public class Match {
 
     // setting the current innings
     @Column(name = "running_innings")
-    private Integer currentInnings;
+    private InningStatus currentInnings;
+
+    public Integer getCurrentInnings() {
+        return currentInnings.getInningsStatusCode();
+    }
 }

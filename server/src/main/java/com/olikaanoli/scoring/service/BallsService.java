@@ -1,5 +1,6 @@
 package com.olikaanoli.scoring.service;
 
+import com.olikaanoli.scoring.config.InningStatus;
 import com.olikaanoli.scoring.input.balls.BallInput;
 import com.olikaanoli.scoring.model.Ball;
 import com.olikaanoli.scoring.model.Player;
@@ -30,7 +31,7 @@ public class BallsService {
 
     private final BallsRepository ballsRepository;
     private final MapperFacade mapperFacade;
-    private final ConcurrentMultiMap<String, FluxSink<BallByBallResponse>> subscribers = new ConcurrentMultiMap<>();
+    //private final ConcurrentMultiMap<String, FluxSink<BallByBallResponse>> subscribers = new ConcurrentMultiMap<>();
     private final BallCalculationRulesService ballCalculationRulesService;
     private final SubscriptionService subscriptionService;
 
@@ -68,7 +69,7 @@ public class BallsService {
         /*subscribers.get(index).forEach(subscriber -> subscriber.next(
                 getMatchScorecard(localBall.getMatchId(), localBall.getTeamId(), localBall.getOvers())
         ));*/
-        subscriptionService.postToSubscribers(localBall.getMatchId(), localBall.getTeamId());
+        subscriptionService.postToSubscribers(localBall.getMatchId());
 
         return localBall;
     }
@@ -91,13 +92,24 @@ public class BallsService {
         return ballsRepository.findRunningOverForMatchIdAndTeam(matchId, teamId);
     }
 
+    public Integer getRunningOverForMatchIdAndInnings(Long matchId, Integer innings) {
+        return ballsRepository.findRunningOverForMatchIdAndInnings(matchId, innings);
+    }
+
     public List<Ball> getAllBallsByMatchIdAndTeamIdAndOvers(
             Long matchId, Long teamId, int overs, Sort sort
     ) {
         return ballsRepository.findAllBallsByMatchIdAndTeamIdAndOvers(matchId, teamId, overs, sort);
     }
 
-    @GraphQLSubscription(name = "BallAdded")
+    public List<Ball> getAllBallsByMatchIdAndInningsAndOvers(
+            Long matchId, Integer innings, int overs, Sort sort
+    ) {
+        return ballsRepository.findAllBallsByMatchIdAndInningsAndOvers(matchId, innings, overs, sort);
+    }
+
+
+    /*@GraphQLSubscription(name = "BallAdded")
     public Publisher<BallByBallResponse> ballAdded(int matchId) {
         String index = matchId + BALL_ADDED;
         return Flux.create(
@@ -105,5 +117,5 @@ public class BallsService {
                         subscribers.add(index, subscriber.onDispose(() ->
                                 subscribers.remove(index, subscriber))),
                 FluxSink.OverflowStrategy.LATEST);
-    }
+    }*/
 }

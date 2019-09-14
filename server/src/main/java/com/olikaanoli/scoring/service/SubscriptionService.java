@@ -51,4 +51,23 @@ public class SubscriptionService {
                 reportsService.getMatchScorecard(matchId, teamId)
         ));
     }
+
+    /**
+     * This method will publish the details to the Subscribers
+     *
+     * @param matchId match id
+     */
+    public void postToSubscribers(Long matchId) {
+
+        // Notify all the subscribers following this task
+        String index = matchId + BALL_ADDED;
+        //System.out.println("postToSubscribers: " + index);
+        //System.out.println("postToSubscribers: " + subscribers.get(index).size());
+
+        // calling method to populate the BallByBallResponse Object
+        // and adding to sub
+        subscribers.get(index).forEach(subscriber -> subscriber.next(
+                reportsService.getMatchScorecardByMatch(matchId)
+        ));
+    }
 }

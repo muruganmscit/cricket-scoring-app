@@ -90,7 +90,7 @@ public class BowlerScorecardService {
 
         System.out.println(matchId + " - " + teamId);
         // update the subscribers
-        subscriptionService.postToSubscribers(matchId, teamId);
+        subscriptionService.postToSubscribers(matchId);
 
         return true;
     }

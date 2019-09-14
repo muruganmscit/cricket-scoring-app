@@ -1,6 +1,7 @@
 package com.olikaanoli.scoring.repository;
 
 import com.olikaanoli.scoring.model.BatsmanScorecard;
+import io.swagger.models.auth.In;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,8 @@ public interface BatsmanScorecardRepository extends JpaRepository<BatsmanScoreca
      * Getting the list of batsman for the given team and match
      */
     List<BatsmanScorecard> findAllByMatchIdAndTeamId(Long matchId, Long teamId, Sort sort);
+
+    List<BatsmanScorecard> findAllByMatchIdAndInnings(Long matchId, Integer innings, Sort sort);
 
     /**
      * Getting data for a particular batsman
@@ -33,6 +36,12 @@ public interface BatsmanScorecardRepository extends JpaRepository<BatsmanScoreca
      */
     @Query("select b from BatsmanScorecard b where (b.matchId = ?1 and b.team.id = ?2 and b.batting in (1, 2)) order by b.batsman")
     List<BatsmanScorecard> findAllActiveBatsmanScorecardByMatchIdAndTeamId(Long matchId, Long teamId);
+
+    /**
+     * Getting the current active batsman for a given match and innings
+     */
+    @Query("select b from BatsmanScorecard b where (b.matchId = ?1 and b.innings = ?2 and b.batting in (1, 2)) order by b.batsman")
+    List<BatsmanScorecard> findAllActiveBatsmanScorecardByMatchIdAndInnings(Long matchId, Integer innings);
 
     /**
      * Getting all batsman who are out

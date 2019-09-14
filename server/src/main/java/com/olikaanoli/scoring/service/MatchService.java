@@ -1,5 +1,6 @@
 package com.olikaanoli.scoring.service;
 
+import com.olikaanoli.scoring.config.InningStatus;
 import com.olikaanoli.scoring.input.match.CreateMatchInput;
 import com.olikaanoli.scoring.input.match.StartMatchInput;
 import com.olikaanoli.scoring.model.*;
@@ -27,6 +28,7 @@ public class MatchService {
     private final TeamService teamService;
     private final PlayerService playerService;
     private final MapperFacade mapperFacade;
+    private final SubscriptionService subscriptionService;
 
     public MatchService(
             MatchRepository matchRepository,
@@ -35,7 +37,8 @@ public class MatchService {
             BatsmanScorecardRepository batsmanScorecardRepository,
             BowlerScorecardRepository bowlerScorecardRepository,
             TotalScorecardRepository totalScorecardRepository,
-            MapperFacade mapperFacade
+            MapperFacade mapperFacade,
+            SubscriptionService subscriptionService
     ) {
         this.matchRepository = matchRepository;
         this.teamService = teamService;
@@ -44,6 +47,7 @@ public class MatchService {
         this.bowlerScorecardRepository = bowlerScorecardRepository;
         this.totalScorecardRepository = totalScorecardRepository;
         this.mapperFacade = mapperFacade;
+        this.subscriptionService = subscriptionService;
     }
 
     /**
@@ -71,6 +75,8 @@ public class MatchService {
         lMatch.setHomeTeam(teamService.getTeamById(match.getHomeTeamId()).get());
         lMatch.setAwayTeam(teamService.getTeamById(match.getAwayTeamId()).get());
 
+        lMatch.setCurrentInnings(InningStatus.MATCH_INIT);
+
         return matchRepository.save(lMatch);
     }
 
@@ -89,7 +95,7 @@ public class MatchService {
         locMatch.setTossWinner(teamService.getTeamById(startMatchInput.getTossWinnerId()).get());
 
         // setting the running innings
-        locMatch.setCurrentInnings(1);
+        locMatch.setCurrentInnings(InningStatus.TEAM_SELECTED);
 
         // updating the partial data into the table
         matchRepository.save(locMatch);
@@ -104,6 +110,8 @@ public class MatchService {
                 startMatchInput.getInnings2Team(),
                 startMatchInput.getInnings2Playing11(),
                 matchId, 2, 1);
+
+        subscriptionService.postToSubscribers(locMatch.getId());
 
         return locMatch;
     }
@@ -122,7 +130,38 @@ public class MatchService {
         Match locMatch = getMatchById(matchId).get();
         mapperFacade.map(match, locMatch);
         return matchRepository.save(locMatch);
+    }
 
+    @GraphQLMutation(name = "MatchInningsStatusUpdate")
+    public Match matchInningsStatusUpdate(
+            @GraphQLArgument(name = "matchId") Long matchId,
+            @GraphQLArgument(name = "innings") InningStatus innings) {
+        Match locMatch = getMatchById(matchId).get();
+        locMatch.setCurrentInnings(innings);
+        matchRepository.save(locMatch);
+
+        subscriptionService.postToSubscribers(locMatch.getId());
+        return locMatch;
+    }
+
+    @GraphQLMutation(name = "EndMatch")
+    public Match endMatch(
+            @GraphQLArgument(name = "matchId") Long matchId,
+            @GraphQLArgument(name = "innings") InningStatus innings,
+            @GraphQLArgument(name = "teamId") Long teamId) {
+        Match locMatch = getMatchById(matchId).get();
+
+        locMatch.setCurrentInnings(innings);
+        // getting team details
+        locMatch.setWinningTeam(teamService.getTeamById(teamId).get());
+        matchRepository.save(locMatch);
+
+        subscriptionService.postToSubscribers(locMatch.getId());
+        return locMatch;
+    }
+
+    public InningStatus getInningsForMatch(Long matchId) {
+        return matchRepository.findInningsByMatchID(matchId);
     }
 
     /**

@@ -79,13 +79,18 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
   END CASE;
 
   SET vWicket = 0;
+  SET vBowlWicket = 0;
   SET vBatting = 1;
   IF (NEW.wicket_type IS NOT NULL) THEN
     SET vWicket = 1;
 
+    IF(NEW.wicket_type <> 5) THEN
+        SET vBowlWicket = 1;
+    END IF;
+
     -- checking if the batsman is out. then batting flag is set to 0
-    IF (NEW.batsman <> NEW.wicket_player) THEN
-      SET vBatting = 1;
+    IF (NEW.batsman = NEW.wicket_player) THEN
+      SET vBatting = 0;
     END IF;
 
     -- SET vBatting = 0;
@@ -197,7 +202,7 @@ CREATE DEFINER=`root`@`localhost` TRIGGER `innings_AFTER_INSERT` AFTER INSERT ON
     balls = vBalls,
     maidens = maidens + vBowlMaidens,
     runs = runs + NEW.bowler_runs,
-    wickets = wickets + vWicket,
+    wickets = wickets + vBowlWicket,
     dot_balls = dot_balls + vBowlDotBalls,
     wides = wides + vBowlWides,
     no_balls = no_balls + vBowlNoBalls,

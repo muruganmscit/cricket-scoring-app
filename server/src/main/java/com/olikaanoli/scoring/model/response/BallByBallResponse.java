@@ -1,15 +1,14 @@
 package com.olikaanoli.scoring.model.response;
 
-import com.olikaanoli.scoring.model.Ball;
-import com.olikaanoli.scoring.model.BatsmanScorecard;
-import com.olikaanoli.scoring.model.BowlerScorecard;
-import com.olikaanoli.scoring.model.TotalScorecard;
+import com.olikaanoli.scoring.model.*;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
 public class BallByBallResponse {
+
+    private Match match;
 
     private List<TotalScorecard> totalScorecards;
 
@@ -23,6 +22,8 @@ public class BallByBallResponse {
     private List<BatsmanScorecard> batsmanScorecards;
 
     // current innings all batsman
+    private List<BatsmanScorecard> playing11Innings1;
 
     // current innings all bowler
+    private List<BatsmanScorecard> playing11Innings2;
 }

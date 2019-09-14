@@ -40,12 +40,31 @@ public class BatsmanScorecardService {
         );
     }
 
+    public List<BatsmanScorecard> getAllBatsmanByMatchAndInnings(
+            @GraphQLArgument(name = "matchId") Long matchId,
+            @GraphQLArgument(name = "innings") Integer innings
+    ) {
+        // TODO: the ordering logic has to be modified
+        return batsmanScorecardRepository.findAllByMatchIdAndInnings(
+                matchId,
+                innings,
+                new Sort(Sort.Direction.ASC, "battingOrder", "batsmanId.firstName")
+        );
+    }
+
     @GraphQLQuery(name = "GetAllActiveBatsmanByMatchAndTeam")
     public List<BatsmanScorecard> getAllActiveBatsmanByMatchAndTeam(
             @GraphQLArgument(name = "matchId") Long matchId,
             @GraphQLArgument(name = "teamId") Long teamId
     ) {
         return batsmanScorecardRepository.findAllActiveBatsmanScorecardByMatchIdAndTeamId(matchId, teamId);
+    }
+
+    public List<BatsmanScorecard> getAllActiveBatsmanByMatchAndInnings(
+            @GraphQLArgument(name = "matchId") Long matchId,
+            @GraphQLArgument(name = "innings") Integer innings
+    ) {
+        return batsmanScorecardRepository.findAllActiveBatsmanScorecardByMatchIdAndInnings(matchId, innings);
     }
 
     @GraphQLQuery(name = "GetBattingScorecardByBatsmanIdAndMatchId")
@@ -97,7 +116,7 @@ public class BatsmanScorecardService {
         batsmanScorecardRepository.saveAll(submitList);
 
         // update the subscribers
-        subscriptionService.postToSubscribers(matchId, batsmanToBeSet.getTeam().getId());
+        subscriptionService.postToSubscribers(matchId);
 
         return true;
     }
