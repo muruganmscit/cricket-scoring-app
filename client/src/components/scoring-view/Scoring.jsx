@@ -98,7 +98,13 @@ const Scoring = ({ client, ...props }) => {
               {totalScorecards[runningInnings - 1].balls}
               <br />
               Total: {totalScorecards[runningInnings - 1].totalRuns}/
-              {totalScorecards[runningInnings - 1].wickets}
+              {totalScorecards[runningInnings - 1].wickets}{" "}
+              {runningInnings == 2 && (
+                <button disabled>
+                  {" "}
+                  Target [{totalScorecards[0].totalRuns + 1}]{" "}
+                </button>
+              )}
             </div>
             <div className={style.innercontainer}>
               <div className={`${style.innercontainer} ${style.batting}`}>
