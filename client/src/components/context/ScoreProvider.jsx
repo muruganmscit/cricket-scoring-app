@@ -190,15 +190,18 @@ const SUBS_SCORE_QUERY = gql`
 `;
 
 export const ScoreProvider = props => {
-  const { subscribeToMore, loading, data, error } = useQuery(GET_SCORE_QUERY, {
-    variables: { matchId: 4 }
-  });
+  const [matchId, setMatchId] = useState(0);
   const [scorecard, setScorecard] = useState({});
+
+  const { subscribeToMore, loading, data, error } = useQuery(GET_SCORE_QUERY, {
+    variables: { matchId: matchId }
+  });
+
   //const [match, setMatch] = useState({});
   const _subscribeToTotal = subscribeToMore => {
     subscribeToMore({
       document: SUBS_SCORE_QUERY,
-      variables: { matchID: 4 },
+      variables: { matchID: matchId },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
         const newScore = subscriptionData.data.BallAdded;
@@ -207,8 +210,9 @@ export const ScoreProvider = props => {
     });
   };
 
+  _subscribeToTotal(subscribeToMore);
+
   useEffect(() => {
-    _subscribeToTotal(subscribeToMore);
     if (!error && !loading) {
       const newScore = nnjson.removeNull(data.ScoreCard);
       setScorecard(newScore);
@@ -220,7 +224,8 @@ export const ScoreProvider = props => {
   return (
     <ScoreContext.Provider
       value={{
-        score: [scorecard, setScorecard]
+        score: [scorecard, setScorecard],
+        match_id: [setMatchId]
       }}
     >
       {props.children}

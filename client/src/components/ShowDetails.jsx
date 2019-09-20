@@ -1,10 +1,10 @@
 import React from "react";
 import ScoreCard from "./client-view/ScoreCard";
 
-const ShowDetails = () => {
+const ShowDetails = ({ ...props }) => {
   return (
     <div>
-      <ScoreCard />
+      <ScoreCard matchID={props.match.params.id} />
     </div>
   );
 };

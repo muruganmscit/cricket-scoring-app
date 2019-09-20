@@ -1,0 +1,18 @@
+mutation {
+  StartMatch(matchId: 4, startMatchInput: {
+    tossWinnerId: 1
+    tossDecision: BATTING
+    innings1Team: 1
+    innings2Team: 3
+    innings1Playing11: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    innings2Playing11: [18, 21, 22, 23, 24, 25, 26, 29, 30, 32]
+  }) {
+    id
+  }
+}
+
+mutation {
+  MatchInningsStatusUpdate(innings: MATCH_INIT, matchId: 4) {
+    id
+  }
+}

@@ -18,7 +18,12 @@ import { ScoreContext } from "../context/ScoreProvider";
 // TODO: Adding a button to start and end innings [in this we will set all the batting not out batting flag to 4]
 
 const Scoring = ({ client, ...props }) => {
-  const { score } = useContext(ScoreContext);
+  const { score, match_id } = useContext(ScoreContext);
+
+  // setting the match id to re-render the data
+  const [setMatchId] = match_id;
+  setMatchId(props.match.params.id);
+
   const [scorecard] = score;
   const {
     match,
@@ -221,7 +226,7 @@ const Scoring = ({ client, ...props }) => {
         return (
           <div className={style.container}>
             <div className={`${style.team} ${style.home}`}>
-              Team {match.winningTeam.teamName} has WON!!!!
+              {match.winningTeam.teamName} has WON!!!!
             </div>
           </div>
         );

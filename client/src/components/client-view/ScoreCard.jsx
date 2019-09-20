@@ -3,11 +3,11 @@ import Logo from "./Logo";
 import style from "./bottomtab.module.css";
 import BottomTabNew from "./BottomTabNew";
 
-const ScoreCard = () => {
+const ScoreCard = ({ matchID }) => {
   return (
     <div className={style.container}>
       <Logo />
-      <BottomTabNew />
+      <BottomTabNew matchID={matchID} />
     </div>
   );
 };

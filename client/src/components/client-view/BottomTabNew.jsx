@@ -4,39 +4,34 @@ import style from "./bottomtabnew.module.css";
 import style1 from "../scoring-view/module/scoring.module.css";
 import Batsman from "./Batsman";
 import MatchTitleCard from "./MatchTitleCard";
-import PlayersList from "../scoring-view/component/PlayersList";
+//import PlayersList from "../scoring-view/component/PlayersList";
 import { ScoreContext } from "./../context/ScoreProvider";
 
-const BottomTabNew = () => {
-  const { score } = useContext(ScoreContext);
+const BottomTabNew = ({ matchID }) => {
+  const { score, match_id } = useContext(ScoreContext);
+
+  // setting the match id to re-render the data
+  const [setMatchId] = match_id;
+  setMatchId(matchID);
+
   const [scorecard] = score;
   const {
     match,
     totalScorecards,
     batsmanScorecards,
-    bowlerScorecard,
-    playing11Innings1,
-    playing11Innings2
+    bowlerScorecard
+    //playing11Innings1,
+    //playing11Innings2
   } = scorecard;
 
   // checking for the match details
-  //if (!isEmpty(match)) {
-  //  const innings = match.currentInnings;
-  //  return <div className={style.mainbar}>Render the Playing XI</div>;
-  //} else {
-  console.log(match);
-
   if (!isEmpty(match)) {
     const innings = match.currentInnings;
     const bowlingTeam = innings === 2 ? 0 : 1;
 
     switch (innings) {
       case 0:
-        return (
-          <div>
-            <MatchTitleCard match={match} />
-          </div>
-        );
+        return <MatchTitleCard match={match} />;
       case 1:
       case 2:
         return (
@@ -107,7 +102,7 @@ const BottomTabNew = () => {
         return (
           <div className={style.mainbar}>
             <div className={`${style1.team} ${style1.home}`}>
-              Team {match.winningTeam.teamName} has WON!!!!
+              {match.winningTeam.teamName} has WON!!!!
             </div>
           </div>
         );
@@ -115,7 +110,6 @@ const BottomTabNew = () => {
         return <MatchTitleCard match={match} />;
     }
   } else {
-    console.log("Loading Part");
     return <div className={style.mainbar}>Loading</div>;
   }
 };
