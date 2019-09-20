@@ -66,8 +66,11 @@ public class SubscriptionService {
 
         // calling method to populate the BallByBallResponse Object
         // and adding to sub
+        // preparing the ball response
+        BallByBallResponse ballByBallResponse = reportsService.getMatchScorecardByMatch(matchId);
+        System.out.println(subscribers.get(index).size());
         subscribers.get(index).forEach(subscriber -> subscriber.next(
-                reportsService.getMatchScorecardByMatch(matchId)
+                ballByBallResponse
         ));
     }
 }

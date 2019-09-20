@@ -210,10 +210,11 @@ export const ScoreProvider = props => {
     });
   };
 
-  _subscribeToTotal(subscribeToMore);
-
   useEffect(() => {
+    console.log("effect");
     if (!error && !loading) {
+      console.log("subscribeToMore");
+      _subscribeToTotal(subscribeToMore);
       const newScore = nnjson.removeNull(data.ScoreCard);
       setScorecard(newScore);
       //const matchDetails = nnjson.removeNull(data.MatchDeatils);
