@@ -99,7 +99,7 @@ const Scoring = ({ client, ...props }) => {
               <br />
               Total: {totalScorecards[runningInnings - 1].totalRuns}/
               {totalScorecards[runningInnings - 1].wickets}{" "}
-              {runningInnings == 2 && (
+              {runningInnings === 2 && (
                 <button disabled>
                   {" "}
                   Target [{totalScorecards[0].totalRuns + 1}]{" "}

@@ -198,20 +198,19 @@ export const ScoreProvider = props => {
   });
 
   //const [match, setMatch] = useState({});
-  const _subscribeToTotal = subscribeToMore => {
-    subscribeToMore({
-      document: SUBS_SCORE_QUERY,
-      variables: { matchID: matchId },
-      updateQuery: (prev, { subscriptionData }) => {
-        if (!subscriptionData.data) return prev;
-        const newScore = subscriptionData.data.BallAdded;
-        setScorecard(Object.assign({}, newScore));
-      }
-    });
-  };
-
   useEffect(() => {
-    console.log("effect");
+    const _subscribeToTotal = subscribeToMore => {
+      subscribeToMore({
+        document: SUBS_SCORE_QUERY,
+        variables: { matchID: matchId },
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+          const newScore = subscriptionData.data.BallAdded;
+          setScorecard(Object.assign({}, newScore));
+        }
+      });
+    };
+
     if (!error && !loading) {
       console.log("subscribeToMore");
       _subscribeToTotal(subscribeToMore);
@@ -220,7 +219,7 @@ export const ScoreProvider = props => {
       //const matchDetails = nnjson.removeNull(data.MatchDeatils);
       //setMatch(matchDetails);
     }
-  }, [loading, data, error, subscribeToMore]);
+  }, [loading, data, error, subscribeToMore, matchId]);
 
   return (
     <ScoreContext.Provider
