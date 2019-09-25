@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
-var nnjson = require("nnjson");
+//var nnjson = require("nnjson");
 
 export const ScoreContext = createContext();
 
@@ -212,10 +212,9 @@ export const ScoreProvider = props => {
     };
 
     if (!error && !loading) {
-      console.log("subscribeToMore");
       _subscribeToTotal(subscribeToMore);
-      const newScore = nnjson.removeNull(data.ScoreCard);
-      setScorecard(newScore);
+      //const newScore = nnjson.removeNull(data.ScoreCard);
+      setScorecard(data.ScoreCard);
       //const matchDetails = nnjson.removeNull(data.MatchDeatils);
       //setMatch(matchDetails);
     }

@@ -18,12 +18,19 @@ body {
   text-align: center;
 }
 
+.teamlist {
+  width: 50%;
+  margin-left: 200px;
+  text-align: center;
+  border: 1px solid black;
+}
+
 .bt {
   padding: 0px;
   display: inline-block;
   position: relative;
-  height: 25px;
-  font-size: 18px;
+  height: 30px;
+  font-size: 20px;
   font-weight: bold;
   /*box-shadow: 0 5px 20px -5px #6c6c6c;*/
 }
@@ -36,7 +43,6 @@ body {
   width: 350px;
   font-family: Aladin, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-size: 30px;
-  font-style: italic;
   font-weight: bold;
   height: 50px;
   border-radius: 6px;
@@ -85,7 +91,7 @@ body {
 }
 
 .address {
-  width: 300px;
+  width: 400px;
   background: white;
   display: inline-block;
   position: relative;
@@ -116,7 +122,21 @@ body {
 }
 
 .bt.batscore {
-  background: #fbfaf9;
+  background: #ada996; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #eaeaea,
+    #dbdbdb,
+    #f2f2f2,
+    #ada996
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #eaeaea,
+    #dbdbdb,
+    #f2f2f2,
+    #ada996
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   width: 45px;
   color: #6c6c6c;
 }
@@ -131,18 +151,32 @@ body {
   margin: 0.5px;
   width: 200px;
   color: black;
-  background: #fff001;
+  background: #ada996; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #eaeaea,
+    #dbdbdb,
+    #f2f2f2,
+    #ada996
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #eaeaea,
+    #dbdbdb,
+    #f2f2f2,
+    #ada996
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .bt.bowler {
   background: #3a7bd5; /* fallback for old browsers */
   background: -webkit-linear-gradient(
-    to right,
+    to bottom,
     #003255,
     #3a7bd5
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
-    to right,
+    to bottom,
     #003255,
     #3a7bd5
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */

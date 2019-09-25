@@ -5,7 +5,7 @@ const Logo = () => {
   return (
     <div className={style.logo}>
       <div className={style.line}>Oli Kaanoli</div>
-      <div className={style.line}>we stream</div>
+      <div className={style.line}>OK Streaming</div>
     </div>
   );
 };

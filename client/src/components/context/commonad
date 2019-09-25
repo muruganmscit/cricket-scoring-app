@@ -1,18 +1,22 @@
 mutation {
-  StartMatch(matchId: 4, startMatchInput: {
+  StartMatch(matchId: 2, startMatchInput: {
     tossWinnerId: 1
     tossDecision: BATTING
     innings1Team: 1
     innings2Team: 3
     innings1Playing11: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-    innings2Playing11: [17, 18, 19, 21, 22, 23, 24, 25, 26, 29, 30]
+    innings2Playing11: [18, 19, 20, 21, 22, 23, 24, 25, 26, 29, 30]
   }) {
     id
   }
 }
 
 mutation {
-  MatchInningsStatusUpdate(innings: MATCH_INIT, matchId: 4) {
+  MatchInningsStatusUpdate(innings: MATCH_INIT, matchId: 2) {
     id
   }
 }
+
+18, 19, 20, 21, 22, 23, 24, 25, 26, 29, 30
+
+LABPTP002668577
